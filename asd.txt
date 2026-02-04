@@ -1,0 +1,4123 @@
+This is the project we need to build, this is the project:
+
+REQUIREMENT FORM GIVEN BY CLIENT:
+📌 Project Title:
+theLog.in — Interactive Professional Profile
+
+📌 Expected Inputs:
+1.1 Candidate Inputs
+Resume file (PDF / DOCX) or
+Manually entered professional details:
+Education
+Work experience
+Skills
+Projects
+Job preferences
+Privacy & disclosure rules (Policy-Driven Disclosure Language):
+Fields marked as ALLOW / BLOCK / PARTIAL
+Example: Salary → BLOCK, Location → ALLOW
+Optional profile edits and confirmations
+1.2 Recruiter Inputs
+Recruiter questions (natural language text)
+Example:
+“What is the candidate’s experience with AI products?”
+“Is the candidate open to remote work?”
+1.3 System-Derived Inputs (Automatic, No User Action)
+These inputs are computed by the system, not manually entered.
+Profile Trustworthiness Signals
+• Linked profile URLs provided by candidate
+– LinkedIn URL
+– GitHub URL
+– Portfolio / personal website URL
+• Email verification status
+– OTP verification (PASS / FAIL)
+• Parsed resume metadata
+– Name tokens
+– Employer names
+– Skills keywords
+– Timeline entities (years, durations)
+• Public profile surface signals
+– Page reachability (HTTP status)
+– Page title + visible keyword presence
+(No scraping or deep parsing in MVP)
+• Internal system metrics
+– Grounding Coverage Index (GCI) per recruiter query
+– Output Verification results (PASS / FAIL)
+– Verifier pass rate over recent interactions
+• Policy & audit configuration flags
+– Sensitive fields protection status
+– Policy explanation availability
+– Audit logging enabled/disabled
+⚠ Note:
+All signals are deterministic, non-judgmental, and do not measure candidate quality or skill level.
+📌 Expected Outputs:
+2.1 Primary Outputs (Visible to Recruiter)
+AI-generated answers that are:
+Strictly grounded in verified profile data
+Governed by candidate-defined privacy rules
+Safe fallback responses when:
+Information is missing
+Disclosure is blocked by policy
+Examples
+Allowed answer:
+“The candidate has led AI-powered SaaS initiatives as part of their product leadership role.”
+Blocked / low coverage fallback:
+“This information is not available in the candidate’s profile.”
+2.2 Secondary Outputs (System/Internal)
+Policy decision: ALLOW / BLOCK / PARTIAL
+Grounding packet (facts used)
+Grounding Coverage Index (GCI) score
+Verification result (PASS / FAIL)
+Logged interaction records for audit and evaluation
+2.3 Recruiter-Facing Trustworthiness Output (New)
+Visible to recruiter alongside AI-generated answers.
+Profile Trustworthiness Score (PTS)
+• Numeric Score: 0 – 100
+• Trust Band:
+– High: 80 – 100
+– Medium: 60 – 79
+– Low: < 60
+Component Breakdown (Explainability)
+Recruiter sees a transparent breakdown:
+Identity & Link Verification (0–30)
+– Linked profile reachability
+– Email verification status
+Cross-Profile Consistency (0–30)
+– Name similarity
+– Employer overlap
+– Skills overlap
+– Timeline conflict check
+Internal Reliability (0–25)
+– Average GCI across recruiter queries
+– Output Verifier pass rate
+Policy & Audit Transparency (0–15)
+– Sensitive data protections
+– Policy explanation capability
+– Audit logging enabled
+Explainability Panel Includes
+• Scoring components with individual points
+• Key reasons influencing score
+• Warnings (if any):
+– “Low public profile overlap”
+– “Timeline conflicts detected”
+• Last Verified Timestamp
+
+📌 Algorithms to be used.:
+3.1 Core Algorithmic Approach
+Multi-Agent AI Pipeline (Rule + LLM based)
+3.2 Agents Used
+Router & Policy Agent
+Rule-based decision algorithm
+Enforces candidate privacy rules before generation
+Grounding Agent
+Information retrieval from structured profile JSON
+Computes Grounding Coverage Index (GCI)
+Answer Composer Agent
+Controlled natural language generation
+Uses only the grounding packet (no external inference)
+Output Verification Agent
+Claim-to-grounding matching
+Policy compliance verification
+Fallback enforcement on failure
+3.3 Key Techniques
+Structured data grounding
+Deterministic policy enforcement
+Coverage-based response gating
+Post-generation verification
+❌ No model fine-tuning
+❌ No external knowledge retrieval
+❌ No unconstrained text generation
+
+📌 Tech Stack:
+4.1 Frontend
+Streamlit
+Candidate interface
+Recruiter question interface
+Research prototype UI
+4.2 Backend
+Python 3.11
+AI orchestration logic (multi-agent pipeline)
+4.3 Database
+SQLite / PostgreSQL
+Structured candidate profile data
+Privacy policies
+Interaction logs
+4.4 AI / NLP
+LLM API (model-agnostic)
+Used only for controlled response generation
+Resume parsing (rule-based / basic NLP)
+4.5 Deployment (Prototype)
+Localhost or single-machine setup
+No production authentication or scaling
+
+📌 Workflow:
+
+Candidate Profile Creation
+Candidate registers on the platform
+Candidate uploads resume (PDF/DOCX) or enters details manually
+Resume is parsed into structured profile JSON:
+Education
+Work experience
+Skills
+Projects
+Job preferences
+Candidate reviews and confirms parsed data
+Candidate defines privacy rules using Policy-Driven Disclosure Language:
+Fields marked as ALLOW / BLOCK / PARTIAL
+Candidate links public profiles (optional):
+LinkedIn
+GitHub
+Portfolio
+Candidate verifies email via OTP
+Profile Governance Setup
+System applies privacy policies to structured profile data
+Sensitive fields are protected based on candidate rules
+Audit logging is enabled for all future interactions
+Profile is marked as Verified – Governed Profile
+Trustworthiness Signal Collection
+System performs deterministic checks:
+Linked profile URL reachability (HTTP 200)
+Name similarity across resume and public profiles
+Employer keyword overlap
+Skills keyword overlap
+Timeline conflict detection
+No scraping or external data retrieval is performed
+Recruiter Access & Questioning
+Recruiter opens candidate’s public profile
+Recruiter submits a natural-language question
+Question is routed to the Multi-Agent AI Pipeline
+Multi-Agent AI Pipeline Execution
+Router & Policy Agent
+Evaluates question against privacy rules
+Decision: ALLOW / BLOCK / PARTIAL
+Grounding Agent
+Retrieves only permitted data from profile JSON
+Builds grounding packet
+Computes Grounding Coverage Index (GCI)
+Answer Composer Agent
+Generates controlled response
+Uses only grounding packet (no external inference)
+Output Verification Agent
+Matches claims to grounding
+Verifies policy compliance
+Enforces fallback on failure
+Profile Trustworthiness Score (PTS) Computation
+System computes PTS using:
+Identity & Link Verification
+Cross-Profile Consistency
+Internal Reliability (Avg GCI + verifier pass rate)
+Policy & Audit Transparency
+PTS (0–100) and Trust Band assigned:
+High / Medium / Low
+Explainability generated:
+Component scores
+Reasons and warnings
+Last verified timestamp
+Recruiter Output
+Recruiter receives:
+Verified AI answer or safe fallback response
+Profile Trustworthiness Score
+Trust Band
+Score breakdown and explanations
+Logging & Audit
+System logs for each interaction:
+Recruiter question
+Generated answer
+Policy decision
+Grounding packet reference
+GCI score
+Verification result
+PTS snapshot
+Logs are stored for audit and evaluation
+Candidate Review & Monitoring
+Candidate can view:
+Recruiter questions
+System responses
+Trustworthiness indicators
+PTS is recalculated as new interactions occur
+DETAILED DESCRIPTION OF THE PROJECT:
+THELOG.IN - TRUSTED INTERACTIVE
+PROFESSIONAL PROFILE
+Policy-Driven Grounded Responses with Audit Trails and Trustworthiness Scoring
+Table of Contents
+theLog.in — Complete Project Outline........................................................................... 2
+
+Project Context .............................................................................................................. 2
+Problem.............................................................................................................................................2
+Research Focus ...................................................................................................................................2
+One-Line Definition ......................................................................................................... 2
+System Components ....................................................................................................... 2
+A. Public Recruiter Interface ................................................................................................................2
+B. Candidate Interface.........................................................................................................................2
+AI Architecture — Multi-Agent Pipeline (Updated) ............................................................... 3
+Agent 1: Router & Policy Agent ............................................................................................................3
+Agent 2: Grounding Agent ...................................................................................................................3
+Agent 3: Answer Composer Agent ........................................................................................................4
+Agent 4: Output Verification Agent ......................................................................................................4
+End-to-End Workflow ...................................................................................................... 5
+What the System Does Not Do .......................................................................................... 5
+Research Contribution ..................................................................................................... 5
+Controlled Professional Representation (CPR)....................................................................................5
+Evaluation Methodology.................................................................................................. 9
+Metrics Measured (With Examples) ......................................................................................................9
+Ablation Study (With Examples) .......................................................................................10
+Technology Stack .........................................................................................................10
+Final Outcome .............................................................................................................11
+Closing Line for Discussion.............................................................................................11
+Recruiter Side Changes (Module: Trustworthiness Score) ...................................................11
+LLM vs model: what we are doing...................................................................................13
+14.1 Identity & Link Verification (0–30).................................................................................15
+2 Cross-Profile Consistency (0–30) ..................................................................................15
+14.3 Internal Reliability (GCI and Verifier Behavior) (0–25) ......................................................17
+4 Policy + Audit Transparency (0–15) ...............................................................................17
+theLog.in — Complete Project Outline
+Project Context
+Problem
+• Resumes are static and one-directional
+• Recruiters repeatedly ask the same screening questions
+• Candidates are unavailable for early synchronous screening
+• Existing AI resume chatbots hallucinate and overshare
+Research Focus
+• How to use AI to represent a real person professionally
+• How to prevent hallucination and privacy leakage
+• How to evaluate AI behavior systematically
+This is a research prototype, not a product.
+One-Line Definition
+theLog.in is a research prototype that enables recruiters to ask screening questions about a
+candidate through AI, where every response is grounded in verified profile data and governed
+by explicit privacy rules.
+System Components
+A. Public Recruiter Interface
+• Single public profile link
+• Displays structured professional information
+• Recruiter can ask questions or leave offline messages
+B. Candidate Interface
+• Upload resume or manually enter profile data
+• Review and edit structured profile
+• Configure privacy and disclosure rules
+• View recruiter conversations and AI responses
+AI Architecture — Multi-Agent Pipeline (Updated)
+We use a 4-agent pipeline to ensure correctness, safety, and auditability.
+Agent 1: Router & Policy Agent
+Purpose
+• Decide whether a recruiter question is allowed to be answered
+Input
+• Recruiter question
+• Candidate-defined privacy rules
+Output
+• ALLOW / BLOCK / PARTIAL
+Example
+• Question: “What is your expected salary?”
+• Privacy rule: Salary is private
+• Output: BLOCK
+• Question: “Are you open to remote work?”
+• Output: ALLOW
+Agent 2: Grounding Agent
+Purpose
+• Select only relevant, verified profile data needed to answer the question
+Input
+• Allowed question
+• Structured profile JSON
+Output
+• Grounding packet (list of facts)
+• Coverage score
+Example
+• Question: “What is your experience in AI products?”
+• Grounding packet:
+o Role: Director of Product Engineering
+o Highlight: Led AI-powered SaaS initiatives
+• Coverage score: 0.8
+Agent 3: Answer Composer Agent
+Purpose
+• Generate a response strictly from the grounding packet
+Input
+• Grounding packet
+• Coverage score
+Output
+• Final answer or fallback response
+Example
+• Grounding packet contains AI product leadership experience
+• Generated answer:
+o “The candidate has led AI-powered SaaS initiatives as part of their product
+leadership role.”
+• If coverage score is low:
+o “This information is not available in the candidate’s profile.”
+Agent 4: Output Verification Agent
+Purpose
+• Verify that the generated answer complies with grounding and policy constraints
+Input
+• Final answer
+• Grounding packet
+• Policy decision
+Checks Performed
+• All claims appear in grounding packet
+• No blocked information is revealed
+• Fallback is used when required
+Example
+• Answer mentions salary when salary is blocked
+• Verification result: FAIL
+• System replaces response with a safe fallback
+This agent ensures last-line defense against hallucination and leakage.
+End-to-End Workflow
+Candidate uploads resume
+Resume is parsed into structured JSON
+Candidate reviews data and sets privacy rules
+Recruiter submits a question
+GPQR pipeline runs:
+o Policy routing
+o Grounding selection
+o Answer composition
+o Output verification
+System logs decision, grounding, response
+Candidate reviews interactions
+What the System Does Not Do
+• No multi-user SaaS architecture
+• No authentication workflows
+• No live audio or video calls
+• No ATS integration
+• No resume generation
+• No model training or fine-tuning
+• No competitive benchmarking against RAG
+Research Contribution
+Controlled Professional Representation (CPR)
+This research proposes Controlled Professional Representation (CPR), a system-level
+framework for AI-mediated professional representation that emphasizes grounding, policy
+control, and verifiable behavior rather than unrestricted text generation.
+The contribution consists of four core elements:
+Grounded Response Generation
+All AI responses are strictly derived from verified, structured profile data reviewed by the
+candidate. The system is prohibited from inferring or fabricating information beyond this
+data.
+Policy-Driven Disclosure Language (PDL)
+Candidates define explicit, field-level disclosure policies that deterministically govern
+what the AI may reveal. Policy enforcement is independent of LLM behavior and
+resistant to prompt manipulation.
+Grounding Coverage Index (GCI)
+The system introduces a quantitative measure of answerability that gates response
+generation. When coverage is insufficient, the system produces a safe fallback instead of
+an overconfident answer.
+Verifiable and Auditable AI Behavior
+Every interaction is logged with policy decisions, grounding packets, coverage scores,
+and final responses. A verification agent ensures compliance, enabling reproducibility
+and failure-mode analysis.
+This integrated approach addresses limitations in existing resume chatbots and AI profile
+systems, which lack deterministic disclosure control, grounding quantification, and verifiable
+safety guarantees.
+7a. Research Contribution (Strengthened and Detailed)
+Controlled Professional Representation (CPR)
+This research introduces Controlled Professional Representation (CPR), a system-level
+framework for AI-mediated professional representation that prioritizes groundedness, privacy
+control, and evaluable behavior over unrestricted generative responses.
+Unlike existing resume chatbots or retrieval-based systems, CPR treats professional
+representation as a constrained decision problem, not an open-ended text generation task.
+The contribution consists of four tightly coupled mechanisms.
+7.1 Grounded Response Generation from Verified Structured Data
+In CPR, all AI-generated responses are strictly grounded in verified, structured profile data
+rather than raw resume text or external knowledge sources.
+• Resumes are parsed into structured fields such as education, experience, skills, and
+preferences.
+• Candidates explicitly review and confirm this data before it is used.
+• The AI system is restricted to this structured representation when generating answers.
+Example
+If a recruiter asks:
+“What is your experience with AI products?”
+The system can only reference fields such as:
+• Role titles
+• Verified experience descriptions
+• Confirmed project summaries
+If no relevant field exists, the system does not infer or guess, and instead produces a fallback
+response.
+This ensures that hallucinated claims (e.g., fabricated years of experience or unverified skills)
+are systematically prevented.
+7.2 Policy-Driven Disclosure Language (PDL)
+A key contribution of this work is the introduction of a Policy-Driven Disclosure Language (PDL)
+for professional AI representation.
+PDL allows candidates to define explicit, field-level disclosure rules that govern what
+information the AI is permitted to reveal.
+Policies are:
+• Deterministic
+• Enforced before response generation
+• Independent of LLM behavior
+Example
+A candidate defines the following rules:
+• Salary: BLOCK
+• Contact details: BLOCK
+• Job preferences: ALLOW
+When a recruiter asks:
+“What is your expected salary range?”
+The Router & Policy Agent deterministically blocks the request, regardless of how the question
+is phrased or reworded.
+This prevents common privacy failures such as:
+• Indirect disclosure
+• Social engineering
+• Prompt manipulation
+PDL shifts trust from prompt engineering to explicit policy enforcement, which is a significant
+departure from existing AI resume tools.
+7.3 Grounding Coverage Index (GCI) for Answer Gating
+The framework introduces the Grounding Coverage Index (GCI), a quantitative measure that
+determines whether a question can be answered confidently using available profile data.
+GCI represents the proportion of required factual elements that are present in the grounding
+packet.
+• High GCI indicates sufficient verified information
+• Low GCI indicates incomplete or missing information
+The system gates responses based on this value.
+Example
+Question:
+“What cloud platforms has the candidate worked with?”
+• Profile mentions AWS but not Azure or GCP
+• GCI is computed as partial (e.g., 0.5)
+If the GCI is below a predefined threshold, the system responds with:
+“This information is not fully available in the candidate’s profile.”
+This mechanism prevents overconfident but incomplete answers, a common failure mode in
+generative AI systems.
+7.4 Verifiable and Auditable AI Behavior
+CPR is designed so that AI behavior is observable, auditable, and repeatable.
+For every recruiter interaction, the system logs:
+• Policy decision (ALLOW / BLOCK / PARTIAL)
+• Grounding packet used
+• GCI value
+• Final response or fallback
+A dedicated Output Verification Agent validates that:
+• All response claims are present in the grounding packet
+• No policy-blocked attributes are disclosed
+• Fallback logic is correctly applied when required
+Example
+If an answer includes salary information while salary is blocked by policy, the verifier flags the
+response and replaces it with a safe fallback.
+This creates a transparent audit trail that allows:
+• Quantitative evaluation
+• Failure-mode analysis
+• Reproducibility across experiments
+7.5 Novelty Over Existing Systems
+Existing resume chatbots and AI profile tools:
+• Rely on unconstrained generation or simple retrieval
+• Do not enforce deterministic disclosure policies
+• Do not quantify answerability
+• Do not provide verifiable guarantees against hallucination
+In contrast, CPR uniquely combines:
+• Structured grounding
+• Policy-driven disclosure
+• Quantitative response gating
+• Post-generation verification
+This integrated framework enables safe, controlled, and evaluable AI-mediated professional
+representation, which is not addressed in current products or research literature.
+Summary of Research Contribution
+In summary, this work contributes:
+A system-level framework (CPR) for safe AI-based professional representation
+A Policy-Driven Disclosure Language (PDL) for deterministic privacy enforcement
+A Grounding Coverage Index (GCI) for controlled answer generation
+A verification mechanism enabling auditable and reproducible AI behavior
+Together, these contributions advance the design of trustworthy AI systems for real-world
+professional contexts.
+Evaluation Methodology
+We validate the hypothesis using failure-mode analysis, not model comparison.
+Metrics Measured (With Examples)
+Hallucination Proxy
+o Measures responses that contain claims not present in the grounding packet
+o Example:
+§ Answer mentions “10 years of ML experience”
+§ Profile contains no such data
+§ Counted as hallucination
+Privacy Leakage Rate
+o Measures responses that reveal policy-blocked information
+o Example:
+§ Salary or phone number revealed despite being blocked
+Coverage vs Fallback Rate
+o Measures how often the system correctly answers vs safely falls back
+o Example:
+§ Question about Kubernetes
+§ Profile does not mention Kubernetes
+§ Correct fallback increases score
+Response Consistency
+o Measures whether repeated questions produce consistent answers
+o Example:
+§ Same experience question asked multiple times
+§ Answers remain semantically consistent
+Ablation Study (With Examples)
+To prove causality, we disable components and observe failures.
+Policy Ablation
+o Disable policy enforcement
+o Expected result:
+§ Privacy leakage increases
+Grounding Ablation
+o Allow answers from full profile text without grounding packet
+o Expected result:
+§ Hallucination increases
+Coverage Gating Ablation
+o Allow answers even with low coverage score
+o Expected result:
+§ Overconfident but incorrect answers increase
+These experiments demonstrate why each control is necessary.
+Technology Stack
+• Python 3.11
+• Streamlit (single research prototype UI)
+• PostgreSQL or SQLite (structured data and policies)
+• LLM API (model-agnostic, no fine-tuning)
+Final Outcome
+The project delivers:
+• A working research prototype
+• A clearly defined multi-agent algorithm
+• Quantitative evaluation results
+• An IEEE-ready research paper draft
+Closing Line for Discussion
+We are building a controlled AI research system to study safe professional representation, not a
+production product.
+Recruiter Side Changes (Module: Trustworthiness Score)
+Recruiter-side Trustworthines - 3Feb26
+Finalized approach
+Output shown to recruiter
+• Profile Trustworthiness Score (PTS): 0–100
+• Band: High (80–100), Medium (60–79), Low (<60)
+• Explainability: component breakdown + reasons + last verified mme
+Core principle
+This score measures profile credibility (corroboramon + consistency + internal reliability), not
+“candidate quality”.
+How we calculate it (breakdown)
+PTS = Iden\ty + Consistency + Internal Reliability + Transparency
+Each component is computed determinismcally from measurable signals and capped at its max.
+Iden\ty & Link Verifica\on (0–30)
+Purpose: “Do the linked idenmmes exist and look valid?”
+Signals (MVP)
+• LinkedIn URL reachable (HTTP 200) → +15
+• GitHub URL reachable (HTTP 200) → +8
+• Poroolio URL reachable (HTTP 200) → +5
+• Email verified (OTP) → +2
+Cap: 30
+Notes:
+• No scraping required in MVP. Just reachability and basic sanity checks.
+Cross-Profile Consistency (0–30)
+Purpose: “Do public profiles roughly match verified profile claims?”
+Signals (MVP)
+• Name similarity (fuzzy match)
+o strong ≥ 0.90 → +10
+o medium 0.75–0.89 → +6
+o weak < 0.75 → +2
+• Employer overlap ramo (resume vs LinkedIn text/keywords)
+o ≥ 0.60 → +10
+o 0.30–0.59 → +6
+o < 0.30 → +2
+• Skills overlap ramo (resume skills vs public keywords)
+o ≥ 0.50 → +6
+o 0.25–0.49 → +4
+o < 0.25 → +2
+• Timeline conflict flag
+o none → +4
+o conflict → +0
+Cap: 30
+Notes:
+• For MVP you can do keyword overlap using minimal extracmon (page mtle + visible
+keywords).
+• You do not need deep parsing. Even “signals present vs absent” works.
+Internal Reliability (GCI and Verifier Behavior) (0–25)
+Purpose: “How reliable is the system’s answering behavior for this profile?”
+Compute from your own logs:
+• Avg GCI over last N recruiter queries (or test queries)
+o ≥ 0.85 → +15
+o 0.70–0.84 → +10
+o 0.50–0.69 → +6
+o < 0.50 → +2
+• Verifier pass rate
+o ≥ 0.90 → +10
+o 0.75–0.89 → +6
+o < 0.75 → +2
+Cap: 25
+This mes directly to your research contribumon.
+Policy + Audit Transparency (0–15)
+Purpose: “Is the profile governed and auditable?”
+Signals:
+• Sensimve fields protected (salary, address, IDs set as BLOCK/PARTIAL) → +8
+• Policy explanamon enabled (the system can state why it cannot answer) → +4
+• Audit logging enabled (store decision, evidence pointers, GCI, verifier) → +3
+Cap: 15
+Final score example
+If a candidate has:
+• LinkedIn reachable, GitHub reachable, poroolio not linked, OTP verified
+• Good name match and moderate overlaps
+• High avg GCI and high verifier pass rate
+• Good PDL protecmons and logs enabled
+Then:
+• Idenmty: 15 + 8 + 0 + 2 = 25
+• Consistency: 10 + 6 + 4 + 4 = 24
+• Internal: 15 + 10 = 25
+• Transparency: 8 + 4 + 3 = 15
+PTS = 25 + 24 + 25 + 15 = 89 (High)
+Recruiter also sees reasons and warnings.
+LLM vs model: what we are doing
+For Review 2 MVP: no LLM required
+We will not use an LLM for scoring.
+We will compute PTS using:
+• URL reachability checks
+• fuzzy string match
+• keyword overlap
+• internal metrics from logs
+This is:
+• simpler
+• explainable
+• reproducible
+• safer for privacy
+Op\onal upgrade path (Phase 2)
+You can add one of these later:
+Op\on A: Small ML model (recommended upgrade)
+Train a simple classifier (logismc regression) on feature vectors:
+• Inputs: the same features listed above
+• Output: probability of “credible profile”
+• Convert to 0–100
+You smll keep explanamons via component breakdown.
+Op\on B: LLM-assisted extrac\on (only if needed)
+Use an LLM only to extract structured fields from public text:
+• “Extract name, headline, employer keywords”
+But keep scoring determinismc.
+This keeps the LLM away from “deciding trust” (less reviewer risk).
+What the recruiter will see (final UI contract)
+• Trust Score: 0–100 with label
+• Breakdown: Idenmty, Consistency, Internal, Transparency
+• Reasons: 3 posimves + up to 2 warnings
+• Last Verified: mmestamp
+• Buton: “Refresh score” (rate-limited)
+Implementa\on deliverables (what your friend needs)
+DB fields or table:
+• linked_profiles (linkedin_url, github_url, poroolio_url, verified_at)
+• trust_score, trust_breakdown_json, trust_last_verified_at
+Backend service:
+• compute_trust_score(profile_id) returns score + breakdown + reasons
+API:
+• GET /public/profile/{slug} includes trust score summary
+• GET /public/profile/{slug}/trust details
+• POST /public/profile/{slug}/trust/refresh
+Here’s the finalized, prac\cal approach for each component, with clear guidance on whether
+we scrape, use datasets, or use sta\c/declared data. The key is to stay privacy-safe,
+implementable, and defensible in a review.
+Ground rule (so you don’t get ques\oned in viva)
+For your project, do not “scrape” in the heavy sense (crawling pages, storing raw HTML,
+bypassing restricmons).
+Use opt-in public links and perform minimal valida\on + minimal extrac\on, and store only
+derived features.
+So your opmons are:
+• Sta\c / declared data (candidate provides URL, username, proof)
+• Light retrieval (fetch the page, extract a few strings, no storage of full page)
+• Official APIs (GitHub API is easiest, LinkedIn API is hard)
+• Synthe\c dataset for evaluamon (recommended for MTech)
+14.1 Identity & Link Verification (0–30)
+What we use
+Sta\c + light retrieval (no dataset required)
+How to compute (MVP)
+Candidate provides:
+• LinkedIn URL
+• GitHub URL
+• Poroolio URL
+• Opmonal: email verified (OTP)
+Validamon steps:
+URL format + domain sanity
+o LinkedIn must be linkedin.com/in/...
+o GitHub must be github.com/...
+Reachability check
+o send HTTP GET/HEAD
+o if response is 200, mark reachable
+Basic page signature check
+o confirm it is not a generic login wall or 404 page mtle
+No scraping required beyond checking the page \tle and final URL.
+Do we need a dataset?
+No. This is determinismc.
+Best prac\ce
+Store only:
+• reachable (true/false)
+• last_checked mmestamp
+• final_url (axer redirects)
+2 Cross-Profile Consistency (0–30)
+This is the tricky one, and you have 3 levels. Choose based on mmeline.
+MVP Level (recommended): Minimal extrac\on + keyword match
+What we use
+Light retrieval + derived features (no full scrape)
+From public pages, extract only:
+• display name string (if visible)
+• headline (if visible)
+• a small keyword set (top 30 tokens)
+Then compare with your verified profile:
+• name similarity (fuzzy match)
+• skill overlap (Jaccard)
+• employer overlap (keyword contains)
+Do we need a dataset?
+No for computamon.
+Yes for evaluamon if you want charts and results.
+How to do extrac\on without “scraping hard”
+• Fetch HTML
+• Strip tags
+• Extract mtle + meta descripmon + visible text up to N characters
+• Do not store raw HTML, only store extracted tokens and match scores
+Stronger Level: Use GitHub official API (recommended for GitHub)
+GitHub consistency checks
+Use GitHub API to fetch:
+• profile name
+• bio
+• languages used
+• repo names
+This is clean and review-safe.
+LinkedIn
+LinkedIn has restricmons and APIs are not easy. For LinkedIn, do only reachability + minimal
+visible text. Do not crawl.
+Dataset vs sta\c data for consistency
+• For actual scoring: use candidate-provided public links (live checks)
+• For research evaluamon: use synthe\c profiles or consented profiles
+o easiest: synthemc
+14.3 Internal Reliability (GCI and Verifier Behavior) (0–25)
+What we use
+Internal system logs only (no scraping, no dataset needed for scoring)
+Inputs:
+• Avg GCI across queries
+• Verifier pass rate
+• Fallback rate
+Computamon:
+• direct from your interacmon_logs table
+Do we need a dataset?
+Not for score computamon.
+For evaluamon graphs, you can use:
+• synthemc recruiter quesmon set (50 to 100 quesmons)
+• run them and compute distribumons
+This is the safest “dataset” because it does not touch personal data.
+4 Policy + Audit Transparency (0–15)
+What we use
+Sta\c data (your own configuramon)
+Inputs:
+• whether sensimve fields have PDL rules (salary BLOCK, locamon PARTIAL, phone BLOCK
+etc.)
+• whether policy explanamon messages exist
+• whether audit logging is enabled
+Do we need a dataset?
+No. It is configuramon-based.
+Final recommended approach (what you should commit to)
+For Review 2 MVP (safe, implementable)
+• Iden\ty (0–30): stamc + reachability check
+• Consistency (0–30): minimal extracmon + keyword overlap (GitHub via API if possible)
+• Internal reliability (0–25): from logs (Avg GCI, verifier pass rate)
+• Transparency (0–15): policy + audit configuramon
+No heavy scraping
+• No crawling mulmple pages
+• No storing raw external page content
+• Only store derived features (match score, overlap %, reachable flag)
+Dataset usage
+Use datasets only for evalua\on, not for live scoring:
+• Create a synthe\c evalua\on dataset:
+o 20–50 profiles with links marked reachable/unreachable and varying overlap
+o 50–100 recruiter quesmons
+• Report score distribumon and case studies
+===========================================
+
+Now for all the AI stuff that using this and that, we will use groq api keys and groq model llama-3.1-8b-instant, for resume parsing use that only, use sqlite, no hardcoded python version and no hardcoded versions in requirements.txt too
+
+The detailed description has a lot of unecessary jargon and slop, but still refer to it if u need to and lets build everything that is asked
+
+Give me all the full code, give me the file structure, dont use any paid services and tell me what all i need to do now step by step
+
+I already have the backend code, give me the frontend code accordingly to that:
+
+this is commands of  the file structure, i already made this, and for each file i also gave the code:
+
+# Create main folders
+mkdir -p backend/{database,services,agents,utils} frontend data
+
+# Create backend root files
+touch 
+backend/__init__.py \
+"""
+theLog.in Backend Package
+Policy-Driven Grounded Responses with Audit Trails and Trustworthiness Scoring
+"""
+
+__version__ = "1.0.0"
+
+backend/config.py
+"""
+Configuration settings for theLog.in
+"""
+
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Base paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+
+# Database
+DATABASE_PATH = os.getenv("DATABASE_PATH", str(DATA_DIR / "thelog.db"))
+
+# Groq API
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = "llama-3.1-8b-instant"
+
+# GCI Thresholds
+GCI_HIGH_THRESHOLD = 0.7
+GCI_LOW_THRESHOLD = 0.3
+
+# Trustworthiness Score Weights
+PTS_IDENTITY_MAX = 30
+PTS_CONSISTENCY_MAX = 30
+PTS_INTERNAL_MAX = 25
+PTS_TRANSPARENCY_MAX = 15
+
+# Trust Bands
+TRUST_BAND_HIGH = 80
+TRUST_BAND_MEDIUM = 60
+
+# Policy Types
+POLICY_ALLOW = "ALLOW"
+POLICY_BLOCK = "BLOCK"
+POLICY_PARTIAL = "PARTIAL"
+
+# Default blocked fields
+DEFAULT_BLOCKED_FIELDS = ["salary", "phone", "address", "ssn", "id_number"]
+DEFAULT_PARTIAL_FIELDS = ["email", "location"]
+
+
+# Create database files
+touch 
+backend/database/__init__.py \
+"""Database package"""
+from .db import Database
+from .models import (
+    CandidateProfile,
+    PrivacyPolicy,
+    LinkedProfile,
+    Interaction,
+    TrustworthinessScore
+)
+
+backend/database/models.py \
+"""
+Data models for theLog.in
+"""
+
+from dataclasses import dataclass, field, asdict
+from typing import List, Dict, Optional, Any
+from datetime import datetime
+import json
+
+
+@dataclass
+class Education:
+    institution: str = ""
+    degree: str = ""
+    field_of_study: str = ""
+    start_year: Optional[int] = None
+    end_year: Optional[int] = None
+    description: str = ""
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "Education":
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class Experience:
+    company: str = ""
+    title: str = ""
+    location: str = ""
+    start_date: str = ""
+    end_date: str = ""
+    is_current: bool = False
+    description: str = ""
+    highlights: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "Experience":
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class Project:
+    name: str = ""
+    description: str = ""
+    technologies: List[str] = field(default_factory=list)
+    url: str = ""
+    start_date: str = ""
+    end_date: str = ""
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "Project":
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class JobPreferences:
+    desired_roles: List[str] = field(default_factory=list)
+    preferred_locations: List[str] = field(default_factory=list)
+    remote_preference: str = ""  # "remote", "hybrid", "onsite", "flexible"
+    expected_salary: str = ""
+    notice_period: str = ""
+    willing_to_relocate: bool = False
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "JobPreferences":
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class CandidateProfile:
+    id: Optional[int] = None
+    slug: str = ""
+    name: str = ""
+    email: str = ""
+    phone: str = ""
+    location: str = ""
+    summary: str = ""
+    skills: List[str] = field(default_factory=list)
+    education: List[Education] = field(default_factory=list)
+    experience: List[Experience] = field(default_factory=list)
+    projects: List[Project] = field(default_factory=list)
+    job_preferences: Optional[JobPreferences] = None
+    email_verified: bool = False
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+    def to_dict(self) -> Dict:
+        data = {
+            "id": self.id,
+            "slug": self.slug,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "location": self.location,
+            "summary": self.summary,
+            "skills": self.skills,
+            "education": [e.to_dict() for e in self.education],
+            "experience": [e.to_dict() for e in self.experience],
+            "projects": [p.to_dict() for p in self.projects],
+            "job_preferences": self.job_preferences.to_dict() if self.job_preferences else None,
+            "email_verified": self.email_verified,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
+        return data
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "CandidateProfile":
+        profile = cls(
+            id=data.get("id"),
+            slug=data.get("slug", ""),
+            name=data.get("name", ""),
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            location=data.get("location", ""),
+            summary=data.get("summary", ""),
+            skills=data.get("skills", []),
+            email_verified=data.get("email_verified", False),
+            created_at=data.get("created_at"),
+            updated_at=data.get("updated_at")
+        )
+
+        if "education" in data and data["education"]:
+            profile.education = [Education.from_dict(e) for e in data["education"]]
+
+        if "experience" in data and data["experience"]:
+            profile.experience = [Experience.from_dict(e) for e in data["experience"]]
+
+        if "projects" in data and data["projects"]:
+            profile.projects = [Project.from_dict(p) for p in data["projects"]]
+
+        if "job_preferences" in data and data["job_preferences"]:
+            profile.job_preferences = JobPreferences.from_dict(data["job_preferences"])
+
+        return profile
+
+
+@dataclass
+class PrivacyPolicy:
+    id: Optional[int] = None
+    profile_id: int = 0
+    field_name: str = ""
+    policy_type: str = "ALLOW"  # ALLOW, BLOCK, PARTIAL
+    partial_config: Optional[Dict] = None
+    created_at: Optional[str] = None
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+
+@dataclass
+class LinkedProfile:
+    id: Optional[int] = None
+    profile_id: int = 0
+    platform: str = ""  # linkedin, github, portfolio
+    url: str = ""
+    is_reachable: Optional[bool] = None
+    last_checked: Optional[str] = None
+    extracted_name: str = ""
+    extracted_keywords: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict:
+        data = asdict(self)
+        data["extracted_keywords"] = self.extracted_keywords
+        return data
+
+
+@dataclass
+class Interaction:
+    id: Optional[int] = None
+    profile_id: int = 0
+    recruiter_question: str = ""
+    policy_decision: str = ""
+    grounding_packet: Dict = field(default_factory=dict)
+    gci_score: float = 0.0
+    generated_answer: str = ""
+    verification_result: str = ""
+    final_response: str = ""
+    created_at: Optional[str] = None
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+
+@dataclass
+class TrustworthinessScore:
+    id: Optional[int] = None
+    profile_id: int = 0
+    total_score: float = 0.0
+    trust_band: str = ""
+    identity_score: float = 0.0
+    consistency_score: float = 0.0
+    internal_score: float = 0.0
+    transparency_score: float = 0.0
+    breakdown: Dict = field(default_factory=dict)
+    reasons: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    last_verified: Optional[str] = None
+
+    def to_dict(self) -> Dict:
+        return asdict(self)
+
+backend/database/db.py
+"""
+Database operations for theLog.in using SQLite
+"""
+
+import sqlite3
+import json
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+from contextlib import contextmanager
+from pathlib import Path
+
+from ..config import DATABASE_PATH
+from .models import (
+    CandidateProfile,
+    Education,
+    Experience,
+    Project,
+    JobPreferences,
+    PrivacyPolicy,
+    LinkedProfile,
+    Interaction,
+    TrustworthinessScore
+)
+
+
+class Database:
+    def __init__(self, db_path: str = DATABASE_PATH):
+        self.db_path = db_path
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+        self._init_db()
+
+    @contextmanager
+    def get_connection(self):
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        try:
+            yield conn
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            conn.close()
+
+    def _init_db(self):
+        """Initialize database schema"""
+        schema = """
+        CREATE TABLE IF NOT EXISTS candidate_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE NOT NULL,
+            name TEXT NOT NULL,
+            email TEXT,
+            phone TEXT,
+            location TEXT,
+            summary TEXT,
+            skills TEXT,
+            education TEXT,
+            experience TEXT,
+            projects TEXT,
+            job_preferences TEXT,
+            email_verified INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS privacy_policies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            profile_id INTEGER NOT NULL,
+            field_name TEXT NOT NULL,
+            policy_type TEXT NOT NULL DEFAULT 'ALLOW',
+            partial_config TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (profile_id) REFERENCES candidate_profiles(id) ON DELETE CASCADE,
+            UNIQUE(profile_id, field_name)
+        );
+
+        CREATE TABLE IF NOT EXISTS linked_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            profile_id INTEGER NOT NULL,
+            platform TEXT NOT NULL,
+            url TEXT NOT NULL,
+            is_reachable INTEGER,
+            last_checked TEXT,
+            extracted_name TEXT,
+            extracted_keywords TEXT,
+            FOREIGN KEY (profile_id) REFERENCES candidate_profiles(id) ON DELETE CASCADE,
+            UNIQUE(profile_id, platform)
+        );
+
+        CREATE TABLE IF NOT EXISTS interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            profile_id INTEGER NOT NULL,
+            recruiter_question TEXT NOT NULL,
+            policy_decision TEXT,
+            grounding_packet TEXT,
+            gci_score REAL,
+            generated_answer TEXT,
+            verification_result TEXT,
+            final_response TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (profile_id) REFERENCES candidate_profiles(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS trustworthiness_scores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            profile_id INTEGER NOT NULL UNIQUE,
+            total_score REAL,
+            trust_band TEXT,
+            identity_score REAL,
+            consistency_score REAL,
+            internal_score REAL,
+            transparency_score REAL,
+            breakdown TEXT,
+            reasons TEXT,
+            warnings TEXT,
+            last_verified TEXT,
+            FOREIGN KEY (profile_id) REFERENCES candidate_profiles(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_profiles_slug ON candidate_profiles(slug);
+        CREATE INDEX IF NOT EXISTS idx_policies_profile ON privacy_policies(profile_id);
+        CREATE INDEX IF NOT EXISTS idx_interactions_profile ON interactions(profile_id);
+        """
+
+        with self.get_connection() as conn:
+            conn.executescript(schema)
+
+    # ============ Candidate Profile Operations ============
+
+    def create_profile(self, profile: CandidateProfile) -> int:
+        """Create a new candidate profile"""
+        with self.get_connection() as conn:
+            cursor = conn.execute("""
+                INSERT INTO candidate_profiles
+                (slug, name, email, phone, location, summary, skills,
+                 education, experience, projects, job_preferences, email_verified)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                profile.slug,
+                profile.name,
+                profile.email,
+                profile.phone,
+                profile.location,
+                profile.summary,
+                json.dumps(profile.skills),
+                json.dumps([e.to_dict() for e in profile.education]),
+                json.dumps([e.to_dict() for e in profile.experience]),
+                json.dumps([p.to_dict() for p in profile.projects]),
+                json.dumps(profile.job_preferences.to_dict()) if profile.job_preferences else None,
+                1 if profile.email_verified else 0
+            ))
+            return cursor.lastrowid
+
+    def get_profile_by_id(self, profile_id: int) -> Optional[CandidateProfile]:
+        """Get profile by ID"""
+        with self.get_connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM candidate_profiles WHERE id = ?",
+                (profile_id,)
+            ).fetchone()
+
+            if row:
+                return self._row_to_profile(row)
+            return None
+
+    def get_profile_by_slug(self, slug: str) -> Optional[CandidateProfile]:
+        """Get profile by slug"""
+        with self.get_connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM candidate_profiles WHERE slug = ?",
+                (slug,)
+            ).fetchone()
+
+            if row:
+                return self._row_to_profile(row)
+            return None
+
+    def get_all_profiles(self) -> List[CandidateProfile]:
+        """Get all profiles"""
+        with self.get_connection() as conn:
+            rows = conn.execute("SELECT * FROM candidate_profiles ORDER BY created_at DESC").fetchall()
+            return [self._row_to_profile(row) for row in rows]
+
+    def update_profile(self, profile: CandidateProfile) -> bool:
+        """Update an existing profile"""
+        with self.get_connection() as conn:
+            conn.execute("""
+                UPDATE candidate_profiles SET
+                    name = ?, email = ?, phone = ?, location = ?, summary = ?,
+                    skills = ?, education = ?, experience = ?, projects = ?,
+                    job_preferences = ?, email_verified = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (
+                profile.name,
+                profile.email,
+                profile.phone,
+                profile.location,
+                profile.summary,
+                json.dumps(profile.skills),
+                json.dumps([e.to_dict() for e in profile.education]),
+                json.dumps([e.to_dict() for e in profile.experience]),
+                json.dumps([p.to_dict() for p in profile.projects]),
+                json.dumps(profile.job_preferences.to_dict()) if profile.job_preferences else None,
+                1 if profile.email_verified else 0,
+                profile.id
+            ))
+            return True
+
+    def delete_profile(self, profile_id: int) -> bool:
+        """Delete a profile"""
+        with self.get_connection() as conn:
+            conn.execute("DELETE FROM candidate_profiles WHERE id = ?", (profile_id,))
+            return True
+
+    def _row_to_profile(self, row: sqlite3.Row) -> CandidateProfile:
+        """Convert database row to CandidateProfile"""
+        data = dict(row)
+        data["skills"] = json.loads(data["skills"]) if data["skills"] else []
+        data["education"] = json.loads(data["education"]) if data["education"] else []
+        data["experience"] = json.loads(data["experience"]) if data["experience"] else []
+        data["projects"] = json.loads(data["projects"]) if data["projects"] else []
+        data["job_preferences"] = json.loads(data["job_preferences"]) if data["job_preferences"] else None
+        data["email_verified"] = bool(data["email_verified"])
+        return CandidateProfile.from_dict(data)
+
+    # ============ Privacy Policy Operations ============
+
+    def set_policy(self, policy: PrivacyPolicy) -> int:
+        """Set or update a privacy policy"""
+        with self.get_connection() as conn:
+            cursor = conn.execute("""
+                INSERT OR REPLACE INTO privacy_policies
+                (profile_id, field_name, policy_type, partial_config)
+                VALUES (?, ?, ?, ?)
+            """, (
+                policy.profile_id,
+                policy.field_name,
+                policy.policy_type,
+                json.dumps(policy.partial_config) if policy.partial_config else None
+            ))
+            return cursor.lastrowid
+
+    def get_policies(self, profile_id: int) -> List[PrivacyPolicy]:
+        """Get all policies for a profile"""
+        with self.get_connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM privacy_policies WHERE profile_id = ?",
+                (profile_id,)
+            ).fetchall()
+
+            policies = []
+            for row in rows:
+                policy = PrivacyPolicy(
+                    id=row["id"],
+                    profile_id=row["profile_id"],
+                    field_name=row["field_name"],
+                    policy_type=row["policy_type"],
+                    partial_config=json.loads(row["partial_config"]) if row["partial_config"] else None,
+                    created_at=row["created_at"]
+                )
+                policies.append(policy)
+            return policies
+
+    def get_policy_for_field(self, profile_id: int, field_name: str) -> Optional[PrivacyPolicy]:
+        """Get policy for a specific field"""
+        with self.get_connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM privacy_policies WHERE profile_id = ? AND field_name = ?",
+                (profile_id, field_name)
+            ).fetchone()
+
+            if row:
+                return PrivacyPolicy(
+                    id=row["id"],
+                    profile_id=row["profile_id"],
+                    field_name=row["field_name"],
+                    policy_type=row["policy_type"],
+                    partial_config=json.loads(row["partial_config"]) if row["partial_config"] else None,
+                    created_at=row["created_at"]
+                )
+            return None
+
+    def delete_policy(self, profile_id: int, field_name: str) -> bool:
+        """Delete a policy"""
+        with self.get_connection() as conn:
+            conn.execute(
+                "DELETE FROM privacy_policies WHERE profile_id = ? AND field_name = ?",
+                (profile_id, field_name)
+            )
+            return True
+
+    # ============ Linked Profile Operations ============
+
+    def add_linked_profile(self, linked: LinkedProfile) -> int:
+        """Add or update a linked profile"""
+        with self.get_connection() as conn:
+            cursor = conn.execute("""
+                INSERT OR REPLACE INTO linked_profiles
+                (profile_id, platform, url, is_reachable, last_checked,
+                 extracted_name, extracted_keywords)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                linked.profile_id,
+                linked.platform,
+                linked.url,
+                1 if linked.is_reachable else 0 if linked.is_reachable is not None else None,
+                linked.last_checked,
+                linked.extracted_name,
+                json.dumps(linked.extracted_keywords)
+            ))
+            return cursor.lastrowid
+
+    def get_linked_profiles(self, profile_id: int) -> List[LinkedProfile]:
+        """Get all linked profiles"""
+        with self.get_connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM linked_profiles WHERE profile_id = ?",
+                (profile_id,)
+            ).fetchall()
+
+            linked_profiles = []
+            for row in rows:
+                lp = LinkedProfile(
+                    id=row["id"],
+                    profile_id=row["profile_id"],
+                    platform=row["platform"],
+                    url=row["url"],
+                    is_reachable=bool(row["is_reachable"]) if row["is_reachable"] is not None else None,
+                    last_checked=row["last_checked"],
+                    extracted_name=row["extracted_name"] or "",
+                    extracted_keywords=json.loads(row["extracted_keywords"]) if row["extracted_keywords"] else []
+                )
+                linked_profiles.append(lp)
+            return linked_profiles
+
+    # ============ Interaction Operations ============
+
+    def log_interaction(self, interaction: Interaction) -> int:
+        """Log an interaction"""
+        with self.get_connection() as conn:
+            cursor = conn.execute("""
+                INSERT INTO interactions
+                (profile_id, recruiter_question, policy_decision, grounding_packet,
+                 gci_score, generated_answer, verification_result, final_response)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                interaction.profile_id,
+                interaction.recruiter_question,
+                interaction.policy_decision,
+                json.dumps(interaction.grounding_packet),
+                interaction.gci_score,
+                interaction.generated_answer,
+                interaction.verification_result,
+                interaction.final_response
+            ))
+            return cursor.lastrowid
+
+    def get_interactions(self, profile_id: int, limit: int = 50) -> List[Interaction]:
+        """Get interactions for a profile"""
+        with self.get_connection() as conn:
+            rows = conn.execute(
+                """SELECT * FROM interactions WHERE profile_id = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (profile_id, limit)
+            ).fetchall()
+
+            interactions = []
+            for row in rows:
+                interaction = Interaction(
+                    id=row["id"],
+                    profile_id=row["profile_id"],
+                    recruiter_question=row["recruiter_question"],
+                    policy_decision=row["policy_decision"],
+                    grounding_packet=json.loads(row["grounding_packet"]) if row["grounding_packet"] else {},
+                    gci_score=row["gci_score"] or 0.0,
+                    generated_answer=row["generated_answer"] or "",
+                    verification_result=row["verification_result"] or "",
+                    final_response=row["final_response"] or "",
+                    created_at=row["created_at"]
+                )
+                interactions.append(interaction)
+            return interactions
+
+    def get_interaction_stats(self, profile_id: int) -> Dict[str, Any]:
+        """Get interaction statistics for a profile"""
+        with self.get_connection() as conn:
+            stats = conn.execute("""
+                SELECT
+                    COUNT(*) as total_interactions,
+                    AVG(gci_score) as avg_gci,
+                    SUM(CASE WHEN verification_result = 'PASS' THEN 1 ELSE 0 END) as pass_count,
+                    SUM(CASE WHEN verification_result = 'FAIL' THEN 1 ELSE 0 END) as fail_count
+                FROM interactions WHERE profile_id = ?
+            """, (profile_id,)).fetchone()
+
+            total = stats["total_interactions"] or 0
+            pass_count = stats["pass_count"] or 0
+
+            return {
+                "total_interactions": total,
+                "avg_gci": stats["avg_gci"] or 0.0,
+                "pass_count": pass_count,
+                "fail_count": stats["fail_count"] or 0,
+                "verifier_pass_rate": pass_count / total if total > 0 else 1.0
+            }
+
+    # ============ Trustworthiness Score Operations ============
+
+    def save_trustworthiness_score(self, score: TrustworthinessScore) -> int:
+        """Save or update trustworthiness score"""
+        with self.get_connection() as conn:
+            cursor = conn.execute("""
+                INSERT OR REPLACE INTO trustworthiness_scores
+                (profile_id, total_score, trust_band, identity_score, consistency_score,
+                 internal_score, transparency_score, breakdown, reasons, warnings, last_verified)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                score.profile_id,
+                score.total_score,
+                score.trust_band,
+                score.identity_score,
+                score.consistency_score,
+                score.internal_score,
+                score.transparency_score,
+                json.dumps(score.breakdown),
+                json.dumps(score.reasons),
+                json.dumps(score.warnings),
+                score.last_verified
+            ))
+            return cursor.lastrowid
+
+    def get_trustworthiness_score(self, profile_id: int) -> Optional[TrustworthinessScore]:
+        """Get trustworthiness score for a profile"""
+        with self.get_connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM trustworthiness_scores WHERE profile_id = ?",
+                (profile_id,)
+            ).fetchone()
+
+            if row:
+                return TrustworthinessScore(
+                    id=row["id"],
+                    profile_id=row["profile_id"],
+                    total_score=row["total_score"],
+                    trust_band=row["trust_band"],
+                    identity_score=row["identity_score"],
+                    consistency_score=row["consistency_score"],
+                    internal_score=row["internal_score"],
+                    transparency_score=row["transparency_score"],
+                    breakdown=json.loads(row["breakdown"]) if row["breakdown"] else {},
+                    reasons=json.loads(row["reasons"]) if row["reasons"] else [],
+                    warnings=json.loads(row["warnings"]) if row["warnings"] else [],
+                    last_verified=row["last_verified"]
+                )
+            return None
+
+# Create services files
+touch 
+backend/services/__init__.py \
+"""Services package"""
+from .resume_parser import ResumeParser
+from .profile_service import ProfileService
+from .policy_service import PolicyService
+from .trustworthiness_service import TrustworthinessService
+from .interaction_service import InteractionService
+
+backend/services/resume_parser.py \
+"""
+Resume Parser Service using LLM
+"""
+
+import os
+import re
+from typing import Dict, Any, Optional
+from pathlib import Path
+
+from ..utils.llm_client import LLMClient
+from ..database.models import (
+    CandidateProfile,
+    Education,
+    Experience,
+    Project,
+    JobPreferences
+)
+
+
+class ResumeParser:
+    """Parse resumes using LLM"""
+
+    def __init__(self):
+        self.llm = LLMClient()
+
+    def parse_pdf(self, file_path: str) -> str:
+        """Extract text from PDF file"""
+        try:
+            import pdfplumber
+
+            text = ""
+            with pdfplumber.open(file_path) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+            return text.strip()
+        except Exception as e:
+            print(f"PDF parsing error: {e}")
+            return ""
+
+    def parse_docx(self, file_path: str) -> str:
+        """Extract text from DOCX file"""
+        try:
+            from docx import Document
+
+            doc = Document(file_path)
+            text = ""
+            for para in doc.paragraphs:
+                text += para.text + "\n"
+            return text.strip()
+        except Exception as e:
+            print(f"DOCX parsing error: {e}")
+            return ""
+
+    def extract_text(self, file_path: str) -> str:
+        """Extract text from resume file"""
+        ext = Path(file_path).suffix.lower()
+
+        if ext == '.pdf':
+            return self.parse_pdf(file_path)
+        elif ext in ['.docx', '.doc']:
+            return self.parse_docx(file_path)
+        elif ext == '.txt':
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        else:
+            raise ValueError(f"Unsupported file format: {ext}")
+
+    def parse_resume_text(self, text: str) -> Dict[str, Any]:
+        """Parse resume text using LLM to extract structured data"""
+
+        system_prompt = """You are a resume parser. Extract structured information from the resume text.
+Be accurate and only extract information that is explicitly stated.
+If information is not available, use empty strings or empty lists."""
+
+        prompt = f"""Parse the following resume and extract information in JSON format.
+
+Resume Text:
+{text}
+
+Extract the following fields:
+{{
+    "name": "Full name",
+    "email": "Email address",
+    "phone": "Phone number",
+    "location": "City, State or City, Country",
+    "summary": "Professional summary or objective (1-2 sentences)",
+    "skills": ["skill1", "skill2", ...],
+    "education": [
+        {{
+            "institution": "University/College name",
+            "degree": "Degree type (BS, MS, PhD, etc.)",
+            "field_of_study": "Major/Field",
+            "start_year": 2020,
+            "end_year": 2024,
+            "description": "Any additional details"
+        }}
+    ],
+    "experience": [
+        {{
+            "company": "Company name",
+            "title": "Job title",
+            "location": "City, Country",
+            "start_date": "Month Year or Year",
+            "end_date": "Month Year or Present",
+            "is_current": false,
+            "description": "Job description",
+            "highlights": ["achievement1", "achievement2"]
+        }}
+    ],
+    "projects": [
+        {{
+            "name": "Project name",
+            "description": "Brief description",
+            "technologies": ["tech1", "tech2"],
+            "url": "Project URL if available",
+            "start_date": "",
+            "end_date": ""
+        }}
+    ]
+}}
+
+Return only valid JSON:"""
+
+        result = self.llm.generate_json(prompt, system_prompt)
+        return result
+
+    def parse_resume(self, file_path: str) -> CandidateProfile:
+        """Parse resume file and return CandidateProfile"""
+        text = self.extract_text(file_path)
+        if not text:
+            raise ValueError("Could not extract text from resume")
+
+        data = self.parse_resume_text(text)
+
+        # Convert to CandidateProfile
+        profile = CandidateProfile(
+            name=data.get("name", ""),
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            location=data.get("location", ""),
+            summary=data.get("summary", ""),
+            skills=data.get("skills", [])
+        )
+
+        # Parse education
+        for edu_data in data.get("education", []):
+            edu = Education(
+                institution=edu_data.get("institution", ""),
+                degree=edu_data.get("degree", ""),
+                field_of_study=edu_data.get("field_of_study", ""),
+                start_year=edu_data.get("start_year"),
+                end_year=edu_data.get("end_year"),
+                description=edu_data.get("description", "")
+            )
+            profile.education.append(edu)
+
+        # Parse experience
+        for exp_data in data.get("experience", []):
+            exp = Experience(
+                company=exp_data.get("company", ""),
+                title=exp_data.get("title", ""),
+                location=exp_data.get("location", ""),
+                start_date=exp_data.get("start_date", ""),
+                end_date=exp_data.get("end_date", ""),
+                is_current=exp_data.get("is_current", False),
+                description=exp_data.get("description", ""),
+                highlights=exp_data.get("highlights", [])
+            )
+            profile.experience.append(exp)
+
+        # Parse projects
+        for proj_data in data.get("projects", []):
+            proj = Project(
+                name=proj_data.get("name", ""),
+                description=proj_data.get("description", ""),
+                technologies=proj_data.get("technologies", []),
+                url=proj_data.get("url", ""),
+                start_date=proj_data.get("start_date", ""),
+                end_date=proj_data.get("end_date", "")
+            )
+            profile.projects.append(proj)
+
+        return profile
+
+    def parse_text_resume(self, text: str) -> CandidateProfile:
+        """Parse resume from raw text"""
+        data = self.parse_resume_text(text)
+
+        profile = CandidateProfile(
+            name=data.get("name", ""),
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            location=data.get("location", ""),
+            summary=data.get("summary", ""),
+            skills=data.get("skills", [])
+        )
+
+        for edu_data in data.get("education", []):
+            edu = Education(
+                institution=edu_data.get("institution", ""),
+                degree=edu_data.get("degree", ""),
+                field_of_study=edu_data.get("field_of_study", ""),
+                start_year=edu_data.get("start_year"),
+                end_year=edu_data.get("end_year"),
+                description=edu_data.get("description", "")
+            )
+            profile.education.append(edu)
+
+        for exp_data in data.get("experience", []):
+            exp = Experience(
+                company=exp_data.get("company", ""),
+                title=exp_data.get("title", ""),
+                location=exp_data.get("location", ""),
+                start_date=exp_data.get("start_date", ""),
+                end_date=exp_data.get("end_date", ""),
+                is_current=exp_data.get("is_current", False),
+                description=exp_data.get("description", ""),
+                highlights=exp_data.get("highlights", [])
+            )
+            profile.experience.append(exp)
+
+        for proj_data in data.get("projects", []):
+            proj = Project(
+                name=proj_data.get("name", ""),
+                description=proj_data.get("description", ""),
+                technologies=proj_data.get("technologies", []),
+                url=proj_data.get("url", ""),
+                start_date=proj_data.get("start_date", ""),
+                end_date=proj_data.get("end_date", "")
+            )
+            profile.projects.append(proj)
+
+        return profile
+
+backend/services/profile_service.py \
+"""
+Profile Service - Manages candidate profiles
+"""
+
+import uuid
+import re
+from typing import List, Optional
+from datetime import datetime
+
+from ..database.db import Database
+from ..database.models import CandidateProfile, LinkedProfile
+from ..utils.url_validator import URLValidator
+
+
+class ProfileService:
+    """Service for managing candidate profiles"""
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+
+    def generate_slug(self, name: str) -> str:
+        """Generate a unique slug from name"""
+        # Create base slug from name
+        base_slug = re.sub(r'[^\w\s-]', '', name.lower())
+        base_slug = re.sub(r'[-\s]+', '-', base_slug).strip('-')
+
+        if not base_slug:
+            base_slug = "profile"
+
+        # Add random suffix for uniqueness
+        suffix = uuid.uuid4().hex[:8]
+        slug = f"{base_slug}-{suffix}"
+
+        return slug
+
+    def create_profile(self, profile: CandidateProfile) -> int:
+        """Create a new candidate profile"""
+        if not profile.slug:
+            profile.slug = self.generate_slug(profile.name)
+
+        return self.db.create_profile(profile)
+
+    def get_profile(self, profile_id: int) -> Optional[CandidateProfile]:
+        """Get profile by ID"""
+        return self.db.get_profile_by_id(profile_id)
+
+    def get_profile_by_slug(self, slug: str) -> Optional[CandidateProfile]:
+        """Get profile by slug"""
+        return self.db.get_profile_by_slug(slug)
+
+    def get_all_profiles(self) -> List[CandidateProfile]:
+        """Get all profiles"""
+        return self.db.get_all_profiles()
+
+    def update_profile(self, profile: CandidateProfile) -> bool:
+        """Update a profile"""
+        return self.db.update_profile(profile)
+
+    def delete_profile(self, profile_id: int) -> bool:
+        """Delete a profile"""
+        return self.db.delete_profile(profile_id)
+
+    def add_linked_profile(
+        self,
+        profile_id: int,
+        platform: str,
+        url: str,
+        validate: bool = True
+    ) -> Optional[LinkedProfile]:
+        """Add a linked profile (LinkedIn, GitHub, Portfolio)"""
+        linked = LinkedProfile(
+            profile_id=profile_id,
+            platform=platform.lower(),
+            url=url
+        )
+
+        if validate:
+            # Validate and extract info based on platform
+            if platform.lower() == "linkedin":
+                is_valid, name, keywords = URLValidator.validate_linkedin(url)
+            elif platform.lower() == "github":
+                is_valid, name, keywords = URLValidator.validate_github(url)
+            else:
+                is_valid, name, keywords = URLValidator.validate_portfolio(url)
+
+            linked.is_reachable = is_valid
+            linked.last_checked = datetime.now().isoformat()
+            linked.extracted_name = name or ""
+            linked.extracted_keywords = keywords
+
+        self.db.add_linked_profile(linked)
+        return linked
+
+    def get_linked_profiles(self, profile_id: int) -> List[LinkedProfile]:
+        """Get all linked profiles"""
+        return self.db.get_linked_profiles(profile_id)
+
+    def refresh_linked_profile(self, profile_id: int, platform: str) -> Optional[LinkedProfile]:
+        """Refresh a linked profile's validation"""
+        linked_profiles = self.db.get_linked_profiles(profile_id)
+
+        for linked in linked_profiles:
+            if linked.platform == platform.lower():
+                return self.add_linked_profile(
+                    profile_id,
+                    platform,
+                    linked.url,
+                    validate=True
+                )
+
+        return None
+
+    def verify_email(self, profile_id: int) -> bool:
+        """Mark email as verified (OTP simulation)"""
+        profile = self.get_profile(profile_id)
+        if profile:
+            profile.email_verified = True
+            return self.update_profile(profile)
+        return False
+
+    def get_profile_json(self, profile_id: int) -> dict:
+        """Get profile as structured JSON for agents"""
+        profile = self.get_profile(profile_id)
+        if not profile:
+            return {}
+        return profile.to_dict()
+
+backend/services/policy_service.py \
+"""
+Policy Service - Manages privacy policies (PDL)
+"""
+
+from typing import List, Dict, Optional
+from ..database.db import Database
+from ..database.models import PrivacyPolicy
+from ..config import (
+    POLICY_ALLOW,
+    POLICY_BLOCK,
+    POLICY_PARTIAL,
+    DEFAULT_BLOCKED_FIELDS,
+    DEFAULT_PARTIAL_FIELDS
+)
+
+
+class PolicyService:
+    """Service for managing privacy policies"""
+
+    # Field categories and their default policies
+    FIELD_CATEGORIES = {
+        "personal": ["name", "email", "phone", "location", "address"],
+        "financial": ["salary", "expected_salary", "compensation"],
+        "professional": ["summary", "skills", "experience", "education", "projects"],
+        "preferences": ["job_preferences", "remote_preference", "notice_period", "willing_to_relocate"],
+        "sensitive": ["ssn", "id_number", "date_of_birth", "age"]
+    }
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+
+    def initialize_default_policies(self, profile_id: int) -> List[PrivacyPolicy]:
+        """Initialize default privacy policies for a profile"""
+        policies = []
+
+        # Set blocked fields
+        for field in DEFAULT_BLOCKED_FIELDS:
+            policy = PrivacyPolicy(
+                profile_id=profile_id,
+                field_name=field,
+                policy_type=POLICY_BLOCK
+            )
+            self.db.set_policy(policy)
+            policies.append(policy)
+
+        # Set partial fields
+        for field in DEFAULT_PARTIAL_FIELDS:
+            policy = PrivacyPolicy(
+                profile_id=profile_id,
+                field_name=field,
+                policy_type=POLICY_PARTIAL,
+                partial_config={"show_domain_only": True}  # For email
+            )
+            self.db.set_policy(policy)
+            policies.append(policy)
+
+        return policies
+
+    def set_policy(
+        self,
+        profile_id: int,
+        field_name: str,
+        policy_type: str,
+        partial_config: Optional[Dict] = None
+    ) -> PrivacyPolicy:
+        """Set or update a privacy policy"""
+        if policy_type not in [POLICY_ALLOW, POLICY_BLOCK, POLICY_PARTIAL]:
+            raise ValueError(f"Invalid policy type: {policy_type}")
+
+        policy = PrivacyPolicy(
+            profile_id=profile_id,
+            field_name=field_name,
+            policy_type=policy_type,
+            partial_config=partial_config
+        )
+        self.db.set_policy(policy)
+        return policy
+
+    def get_policies(self, profile_id: int) -> List[PrivacyPolicy]:
+        """Get all policies for a profile"""
+        return self.db.get_policies(profile_id)
+
+    def get_policy_for_field(self, profile_id: int, field_name: str) -> str:
+        """Get policy type for a specific field"""
+        policy = self.db.get_policy_for_field(profile_id, field_name)
+        if policy:
+            return policy.policy_type
+
+        # Default policy based on field category
+        if field_name in DEFAULT_BLOCKED_FIELDS:
+            return POLICY_BLOCK
+        elif field_name in DEFAULT_PARTIAL_FIELDS:
+            return POLICY_PARTIAL
+        else:
+            return POLICY_ALLOW
+
+    def get_policies_dict(self, profile_id: int) -> Dict[str, str]:
+        """Get all policies as a dictionary"""
+        policies = self.get_policies(profile_id)
+        return {p.field_name: p.policy_type for p in policies}
+
+    def check_field_allowed(self, profile_id: int, field_name: str) -> tuple:
+        """
+        Check if a field is allowed to be disclosed
+        Returns: (policy_type, partial_config)
+        """
+        policy = self.db.get_policy_for_field(profile_id, field_name)
+
+        if policy:
+            return policy.policy_type, policy.partial_config
+
+        # Check default blocked/partial
+        if field_name in DEFAULT_BLOCKED_FIELDS:
+            return POLICY_BLOCK, None
+        elif field_name in DEFAULT_PARTIAL_FIELDS:
+            return POLICY_PARTIAL, {"show_domain_only": True}
+
+        return POLICY_ALLOW, None
+
+    def delete_policy(self, profile_id: int, field_name: str) -> bool:
+        """Delete a policy (revert to default)"""
+        return self.db.delete_policy(profile_id, field_name)
+
+    def get_all_field_names(self) -> List[str]:
+        """Get all possible field names"""
+        fields = []
+        for category, field_list in self.FIELD_CATEGORIES.items():
+            fields.extend(field_list)
+        return fields
+
+    def has_sensitive_protections(self, profile_id: int) -> bool:
+        """Check if sensitive fields are properly protected"""
+        sensitive_fields = ["salary", "expected_salary", "phone", "address", "ssn", "id_number"]
+
+        for field in sensitive_fields:
+            policy_type, _ = self.check_field_allowed(profile_id, field)
+            if policy_type == POLICY_ALLOW:
+                return False
+
+        return True
+
+    def has_policy_explanations(self, profile_id: int) -> bool:
+        """Check if policy explanations are available"""
+        # In this implementation, we always have explanations
+        return True
+
+    def is_audit_logging_enabled(self, profile_id: int) -> bool:
+        """Check if audit logging is enabled"""
+        # In this implementation, logging is always enabled
+        return True
+
+backend/services/trustworthiness_service.py \
+"""
+Trustworthiness Service - Computes Profile Trustworthiness Score (PTS)
+"""
+
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+
+from ..database.db import Database
+from ..database.models import TrustworthinessScore, CandidateProfile, LinkedProfile
+from ..services.policy_service import PolicyService
+from ..utils.text_utils import TextUtils
+from ..config import (
+    PTS_IDENTITY_MAX,
+    PTS_CONSISTENCY_MAX,
+    PTS_INTERNAL_MAX,
+    PTS_TRANSPARENCY_MAX,
+    TRUST_BAND_HIGH,
+    TRUST_BAND_MEDIUM
+)
+
+
+class TrustworthinessService:
+    """Service for computing Profile Trustworthiness Score"""
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+        self.policy_service = PolicyService(db)
+
+    def compute_score(self, profile_id: int) -> TrustworthinessScore:
+        """Compute the full trustworthiness score for a profile"""
+        profile = self.db.get_profile_by_id(profile_id)
+        if not profile:
+            raise ValueError(f"Profile not found: {profile_id}")
+
+        linked_profiles = self.db.get_linked_profiles(profile_id)
+        interaction_stats = self.db.get_interaction_stats(profile_id)
+
+        # Compute each component
+        identity_score, identity_breakdown = self._compute_identity_score(
+            profile, linked_profiles
+        )
+
+        consistency_score, consistency_breakdown, consistency_warnings = self._compute_consistency_score(
+            profile, linked_profiles
+        )
+
+        internal_score, internal_breakdown = self._compute_internal_score(
+            interaction_stats
+        )
+
+        transparency_score, transparency_breakdown = self._compute_transparency_score(
+            profile_id
+        )
+
+        # Total score
+        total_score = identity_score + consistency_score + internal_score + transparency_score
+        total_score = min(100, max(0, total_score))
+
+        # Determine trust band
+        if total_score >= TRUST_BAND_HIGH:
+            trust_band = "High"
+        elif total_score >= TRUST_BAND_MEDIUM:
+            trust_band = "Medium"
+        else:
+            trust_band = "Low"
+
+        # Compile breakdown
+        breakdown = {
+            "identity": identity_breakdown,
+            "consistency": consistency_breakdown,
+            "internal": internal_breakdown,
+            "transparency": transparency_breakdown
+        }
+
+        # Compile reasons
+        reasons = self._compile_reasons(breakdown)
+        warnings = consistency_warnings
+
+        # Create score object
+        score = TrustworthinessScore(
+            profile_id=profile_id,
+            total_score=round(total_score, 1),
+            trust_band=trust_band,
+            identity_score=round(identity_score, 1),
+            consistency_score=round(consistency_score, 1),
+            internal_score=round(internal_score, 1),
+            transparency_score=round(transparency_score, 1),
+            breakdown=breakdown,
+            reasons=reasons,
+            warnings=warnings,
+            last_verified=datetime.now().isoformat()
+        )
+
+        # Save to database
+        self.db.save_trustworthiness_score(score)
+
+        return score
+
+    def _compute_identity_score(
+        self,
+        profile: CandidateProfile,
+        linked_profiles: List[LinkedProfile]
+    ) -> Tuple[float, Dict]:
+        """
+        Compute Identity & Link Verification score (0-30)
+        - LinkedIn reachable: +15
+        - GitHub reachable: +8
+        - Portfolio reachable: +5
+        - Email verified: +2
+        """
+        score = 0
+        breakdown = {
+            "linkedin_reachable": False,
+            "github_reachable": False,
+            "portfolio_reachable": False,
+            "email_verified": profile.email_verified
+        }
+
+        for linked in linked_profiles:
+            if linked.platform == "linkedin" and linked.is_reachable:
+                score += 15
+                breakdown["linkedin_reachable"] = True
+            elif linked.platform == "github" and linked.is_reachable:
+                score += 8
+                breakdown["github_reachable"] = True
+            elif linked.platform == "portfolio" and linked.is_reachable:
+                score += 5
+                breakdown["portfolio_reachable"] = True
+
+        if profile.email_verified:
+            score += 2
+
+        # Cap at max
+        score = min(score, PTS_IDENTITY_MAX)
+        breakdown["score"] = score
+        breakdown["max"] = PTS_IDENTITY_MAX
+
+        return score, breakdown
+
+    def _compute_consistency_score(
+        self,
+        profile: CandidateProfile,
+        linked_profiles: List[LinkedProfile]
+    ) -> Tuple[float, Dict, List[str]]:
+        """
+        Compute Cross-Profile Consistency score (0-30)
+        - Name similarity: +10 (strong), +6 (medium), +2 (weak)
+        - Employer overlap: +10 (>=60%), +6 (30-59%), +2 (<30%)
+        - Skills overlap: +6 (>=50%), +4 (25-49%), +2 (<25%)
+        - No timeline conflicts: +4
+        """
+        score = 0
+        breakdown = {
+            "name_similarity": 0,
+            "employer_overlap": 0,
+            "skills_overlap": 0,
+            "timeline_conflict": False
+        }
+        warnings = []
+
+        # Collect external data
+        external_names = []
+        external_keywords = []
+
+        for linked in linked_profiles:
+            if linked.extracted_name:
+                external_names.append(linked.extracted_name)
+            if linked.extracted_keywords:
+                external_keywords.extend(linked.extracted_keywords)
+
+        # Name similarity
+        if external_names:
+            max_similarity = 0
+            for ext_name in external_names:
+                sim = TextUtils.name_similarity(profile.name, ext_name)
+                max_similarity = max(max_similarity, sim)
+
+            breakdown["name_similarity"] = max_similarity
+
+            if max_similarity >= 0.90:
+                score += 10
+            elif max_similarity >= 0.75:
+                score += 6
+            else:
+                score += 2
+                if max_similarity < 0.5:
+                    warnings.append("Low name match across profiles")
+        else:
+            # No external names to compare
+            score += 2
+
+        # Employer overlap
+        profile_employers = [exp.company for exp in profile.experience if exp.company]
+
+        if profile_employers and external_keywords:
+            employer_overlap = TextUtils.employer_overlap(profile_employers, external_keywords)
+            breakdown["employer_overlap"] = employer_overlap
+
+            if employer_overlap >= 0.60:
+                score += 10
+            elif employer_overlap >= 0.30:
+                score += 6
+            else:
+                score += 2
+                if employer_overlap < 0.2:
+                    warnings.append("Low employer overlap with public profiles")
+        else:
+            score += 2
+
+        # Skills overlap
+        if profile.skills and external_keywords:
+            skills_overlap = TextUtils.skills_overlap(profile.skills, external_keywords)
+            breakdown["skills_overlap"] = skills_overlap
+
+            if skills_overlap >= 0.50:
+                score += 6
+            elif skills_overlap >= 0.25:
+                score += 4
+            else:
+                score += 2
+        else:
+            score += 2
+
+        # Timeline conflicts
+        if profile.experience and external_keywords:
+            external_years = TextUtils.extract_years(' '.join(external_keywords))
+            has_conflict, conflict_msgs = TextUtils.check_timeline_conflicts(
+                [exp.to_dict() for exp in profile.experience],
+                external_years
+            )
+
+            breakdown["timeline_conflict"] = has_conflict
+
+            if not has_conflict:
+                score += 4
+            else:
+                warnings.extend(conflict_msgs)
+        else:
+            score += 4
+
+        # Cap at max
+        score = min(score, PTS_CONSISTENCY_MAX)
+        breakdown["score"] = score
+        breakdown["max"] = PTS_CONSISTENCY_MAX
+
+        return score, breakdown, warnings
+
+    def _compute_internal_score(
+        self,
+        interaction_stats: Dict
+    ) -> Tuple[float, Dict]:
+        """
+        Compute Internal Reliability score (0-25)
+        - Avg GCI >= 0.85: +15, 0.70-0.84: +10, 0.50-0.69: +6, <0.50: +2
+        - Verifier pass rate >= 0.90: +10, 0.75-0.89: +6, <0.75: +2
+        """
+        score = 0
+        avg_gci = interaction_stats.get("avg_gci", 0)
+        verifier_pass_rate = interaction_stats.get("verifier_pass_rate", 1.0)
+
+        breakdown = {
+            "avg_gci": avg_gci,
+            "verifier_pass_rate": verifier_pass_rate,
+            "total_interactions": interaction_stats.get("total_interactions", 0)
+        }
+
+        # GCI score
+        if avg_gci >= 0.85:
+            score += 15
+        elif avg_gci >= 0.70:
+            score += 10
+        elif avg_gci >= 0.50:
+            score += 6
+        else:
+            # If no interactions, give benefit of doubt
+            if interaction_stats.get("total_interactions", 0) == 0:
+                score += 10
+            else:
+                score += 2
+
+        # Verifier pass rate
+        if verifier_pass_rate >= 0.90:
+            score += 10
+        elif verifier_pass_rate >= 0.75:
+            score += 6
+        else:
+            score += 2
+
+        # Cap at max
+        score = min(score, PTS_INTERNAL_MAX)
+        breakdown["score"] = score
+        breakdown["max"] = PTS_INTERNAL_MAX
+
+        return score, breakdown
+
+    def _compute_transparency_score(
+        self,
+        profile_id: int
+    ) -> Tuple[float, Dict]:
+        """
+        Compute Policy & Audit Transparency score (0-15)
+        - Sensitive fields protected: +8
+        - Policy explanations available: +4
+        - Audit logging enabled: +3
+        """
+        score = 0
+        breakdown = {
+            "sensitive_protected": False,
+            "policy_explanations": False,
+            "audit_logging": False
+        }
+
+        # Check sensitive field protections
+        if self.policy_service.has_sensitive_protections(profile_id):
+            score += 8
+            breakdown["sensitive_protected"] = True
+
+        # Check policy explanations
+        if self.policy_service.has_policy_explanations(profile_id):
+            score += 4
+            breakdown["policy_explanations"] = True
+
+        # Check audit logging
+        if self.policy_service.is_audit_logging_enabled(profile_id):
+            score += 3
+            breakdown["audit_logging"] = True
+
+        # Cap at max
+        score = min(score, PTS_TRANSPARENCY_MAX)
+        breakdown["score"] = score
+        breakdown["max"] = PTS_TRANSPARENCY_MAX
+
+        return score, breakdown
+
+    def _compile_reasons(self, breakdown: Dict) -> List[str]:
+        """Compile human-readable reasons from breakdown"""
+        reasons = []
+
+        # Identity reasons
+        identity = breakdown.get("identity", {})
+        if identity.get("linkedin_reachable"):
+            reasons.append("LinkedIn profile verified and reachable")
+        if identity.get("github_reachable"):
+            reasons.append("GitHub profile verified and reachable")
+        if identity.get("email_verified"):
+            reasons.append("Email address verified")
+
+        # Consistency reasons
+        consistency = breakdown.get("consistency", {})
+        name_sim = consistency.get("name_similarity", 0)
+        if name_sim >= 0.90:
+            reasons.append("Strong name match across profiles")
+        elif name_sim >= 0.75:
+            reasons.append("Good name consistency across profiles")
+
+        emp_overlap = consistency.get("employer_overlap", 0)
+        if emp_overlap >= 0.60:
+            reasons.append("High employer overlap with public profiles")
+
+        # Internal reasons
+        internal = breakdown.get("internal", {})
+        if internal.get("avg_gci", 0) >= 0.85:
+            reasons.append("High grounding coverage in responses")
+        if internal.get("verifier_pass_rate", 0) >= 0.90:
+            reasons.append("Excellent response verification rate")
+
+        # Transparency reasons
+        transparency = breakdown.get("transparency", {})
+        if transparency.get("sensitive_protected"):
+            reasons.append("Sensitive information properly protected")
+        if transparency.get("audit_logging"):
+            reasons.append("Full audit logging enabled")
+
+        return reasons[:5]  # Return top 5 reasons
+
+    def get_score(self, profile_id: int) -> Optional[TrustworthinessScore]:
+        """Get cached trustworthiness score"""
+        return self.db.get_trustworthiness_score(profile_id)
+
+    def refresh_score(self, profile_id: int) -> TrustworthinessScore:
+        """Refresh and return trustworthiness score"""
+        return self.compute_score(profile_id)
+
+backend/services/interaction_service.py
+"""
+Interaction Service - Logs and manages interactions
+"""
+
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+
+from ..database.db import Database
+from ..database.models import Interaction
+
+
+class InteractionService:
+    """Service for managing recruiter-profile interactions"""
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+
+    def log_interaction(
+        self,
+        profile_id: int,
+        recruiter_question: str,
+        policy_decision: str,
+        grounding_packet: Dict[str, Any],
+        gci_score: float,
+        generated_answer: str,
+        verification_result: str,
+        final_response: str
+    ) -> int:
+        """Log an interaction"""
+        interaction = Interaction(
+            profile_id=profile_id,
+            recruiter_question=recruiter_question,
+            policy_decision=policy_decision,
+            grounding_packet=grounding_packet,
+            gci_score=gci_score,
+            generated_answer=generated_answer,
+            verification_result=verification_result,
+            final_response=final_response
+        )
+        return self.db.log_interaction(interaction)
+
+    def get_interactions(self, profile_id: int, limit: int = 50) -> List[Interaction]:
+        """Get interactions for a profile"""
+        return self.db.get_interactions(profile_id, limit)
+
+    def get_interaction_stats(self, profile_id: int) -> Dict[str, Any]:
+        """Get interaction statistics"""
+        return self.db.get_interaction_stats(profile_id)
+
+    def get_recent_questions(self, profile_id: int, limit: int = 10) -> List[str]:
+        """Get recent questions for a profile"""
+        interactions = self.get_interactions(profile_id, limit)
+        return [i.recruiter_question for i in interactions]
+
+    def get_interaction_summary(self, profile_id: int) -> Dict[str, Any]:
+        """Get a summary of interactions"""
+        stats = self.get_interaction_stats(profile_id)
+        interactions = self.get_interactions(profile_id, 10)
+
+        return {
+            "total_interactions": stats.get("total_interactions", 0),
+            "avg_gci": round(stats.get("avg_gci", 0), 2),
+            "verifier_pass_rate": round(stats.get("verifier_pass_rate", 1.0), 2),
+            "recent_questions": [
+                {
+                    "question": i.recruiter_question,
+                    "policy_decision": i.policy_decision,
+                    "gci_score": round(i.gci_score, 2),
+                    "verification_result": i.verification_result,
+                    "created_at": i.created_at
+                }
+                for i in interactions
+            ]
+        }
+
+
+# Create agents files
+touch 
+backend/agents/__init__.py \
+"""Agents package"""
+from .router_policy_agent import RouterPolicyAgent
+from .grounding_agent import GroundingAgent
+from .answer_composer_agent import AnswerComposerAgent
+from .output_verification_agent import OutputVerificationAgent
+from .pipeline import AgentPipeline
+
+backend/agents/router_policy_agent.py \
+"""
+Router & Policy Agent
+Evaluates questions against privacy rules
+"""
+
+from typing import Dict, Any, Tuple, List
+from ..database.models import CandidateProfile
+from ..services.policy_service import PolicyService
+from ..utils.llm_client import LLMClient
+from ..config import POLICY_ALLOW, POLICY_BLOCK, POLICY_PARTIAL
+
+
+class RouterPolicyAgent:
+    """
+    Agent that routes questions and enforces privacy policies
+
+    Input:
+    - Recruiter question
+    - Candidate-defined privacy rules
+
+    Output:
+    - Policy decision: ALLOW / BLOCK / PARTIAL
+    - Relevant fields that the question is asking about
+    - Reason for decision
+    """
+
+    # Mapping of sensitive topics to fields
+    TOPIC_TO_FIELDS = {
+        "salary": ["salary", "expected_salary", "compensation"],
+        "compensation": ["salary", "expected_salary", "compensation"],
+        "money": ["salary", "expected_salary", "compensation"],
+        "pay": ["salary", "expected_salary", "compensation"],
+        "phone": ["phone"],
+        "contact": ["phone", "email", "address"],
+        "address": ["address", "location"],
+        "age": ["age", "date_of_birth"],
+        "personal": ["phone", "email", "address", "age"],
+    }
+
+    def __init__(self, policy_service: PolicyService):
+        self.policy_service = policy_service
+        self.llm = LLMClient()
+
+    def analyze_question(self, question: str) -> Dict[str, Any]:
+        """Analyze question to determine relevant fields"""
+        # Available fields
+        all_fields = [
+            "name", "email", "phone", "location", "address", "summary",
+            "skills", "education", "experience", "projects",
+            "job_preferences", "remote_preference", "expected_salary",
+            "salary", "notice_period", "willing_to_relocate"
+        ]
+
+        prompt = f"""Analyze this recruiter question about a job candidate:
+
+Question: "{question}"
+
+Determine which profile fields are relevant to answer this question.
+Available fields: {', '.join(all_fields)}
+
+Return JSON with:
+{{
+    "relevant_fields": ["field1", "field2"],
+    "question_intent": "brief description of what the question is asking",
+    "is_sensitive": true/false (if asking about salary, personal contact, etc.)
+}}
+
+JSON:"""
+
+        result = self.llm.generate_json(prompt)
+
+        # Fallback if LLM fails
+        if not result:
+            result = {
+                "relevant_fields": self._detect_fields_rule_based(question),
+                "question_intent": "general inquiry",
+                "is_sensitive": self._is_sensitive_question(question)
+            }
+
+        return result
+
+    def _detect_fields_rule_based(self, question: str) -> List[str]:
+        """Rule-based field detection as fallback"""
+        question_lower = question.lower()
+        fields = []
+
+        # Experience related
+        if any(w in question_lower for w in ["experience", "work", "job", "role", "position", "company", "employer"]):
+            fields.append("experience")
+
+        # Skills related
+        if any(w in question_lower for w in ["skill", "technology", "programming", "language", "framework", "tool"]):
+            fields.append("skills")
+
+        # Education related
+        if any(w in question_lower for w in ["education", "degree", "university", "college", "school", "study"]):
+            fields.append("education")
+
+        # Projects related
+        if any(w in question_lower for w in ["project", "portfolio", "built", "created", "developed"]):
+            fields.append("projects")
+
+        # Job preferences
+        if any(w in question_lower for w in ["remote", "location", "relocate", "work from", "hybrid", "onsite"]):
+            fields.append("job_preferences")
+
+        # Salary (sensitive)
+        if any(w in question_lower for w in ["salary", "compensation", "pay", "money", "ctc", "package"]):
+            fields.append("salary")
+            fields.append("expected_salary")
+
+        # Contact (sensitive)
+        if any(w in question_lower for w in ["phone", "call", "number", "contact"]):
+            fields.append("phone")
+
+        if any(w in question_lower for w in ["email", "mail", "reach"]):
+            fields.append("email")
+
+        # Summary/general
+        if any(w in question_lower for w in ["about", "tell me", "background", "summary", "overview"]):
+            fields.append("summary")
+
+        # If no specific fields detected, assume general professional info
+        if not fields:
+            fields = ["experience", "skills", "summary"]
+
+        return fields
+
+    def _is_sensitive_question(self, question: str) -> bool:
+        """Check if question is about sensitive topics"""
+        question_lower = question.lower()
+        sensitive_keywords = [
+            "salary", "compensation", "pay", "money", "ctc", "package",
+            "phone", "number", "call",
+            "address", "live", "residence",
+            "age", "old", "birth",
+            "personal", "private"
+        ]
+        return any(kw in question_lower for kw in sensitive_keywords)
+
+    def evaluate(
+        self,
+        profile_id: int,
+        question: str
+    ) -> Tuple[str, List[str], str]:
+        """
+        Evaluate question against privacy policies
+
+        Returns:
+        - policy_decision: ALLOW / BLOCK / PARTIAL
+        - allowed_fields: list of fields allowed to use
+        - reason: explanation of decision
+        """
+        # Analyze question
+        analysis = self.analyze_question(question)
+        relevant_fields = analysis.get("relevant_fields", [])
+
+        if not relevant_fields:
+            return POLICY_ALLOW, [], "General inquiry with no specific field requirements"
+
+        # Check policy for each relevant field
+        blocked_fields = []
+        partial_fields = []
+        allowed_fields = []
+
+        for field in relevant_fields:
+            policy_type, _ = self.policy_service.check_field_allowed(profile_id, field)
+
+            if policy_type == POLICY_BLOCK:
+                blocked_fields.append(field)
+            elif policy_type == POLICY_PARTIAL:
+                partial_fields.append(field)
+            else:
+                allowed_fields.append(field)
+
+        # Determine overall decision
+        if all(f in blocked_fields for f in relevant_fields):
+            # All relevant fields are blocked
+            decision = POLICY_BLOCK
+            reason = f"This question asks about blocked information: {', '.join(blocked_fields)}"
+        elif any(f in blocked_fields for f in relevant_fields):
+            # Some fields blocked
+            decision = POLICY_PARTIAL
+            reason = f"Some requested information is restricted. Available: {', '.join(allowed_fields + partial_fields)}"
+        elif partial_fields:
+            decision = POLICY_PARTIAL
+            reason = f"Limited information available for: {', '.join(partial_fields)}"
+        else:
+            decision = POLICY_ALLOW
+            reason = "All requested information is available"
+            allowed_fields = relevant_fields
+
+        return decision, allowed_fields, reason
+
+    def get_policy_explanation(
+        self,
+        profile_id: int,
+        blocked_field: str
+    ) -> str:
+        """Get explanation for why a field is blocked"""
+        policy_type, _ = self.policy_service.check_field_allowed(profile_id, blocked_field)
+
+        explanations = {
+            "salary": "Salary information is kept confidential by the candidate.",
+            "expected_salary": "Expected compensation is kept confidential by the candidate.",
+            "phone": "Contact phone number is not disclosed publicly.",
+            "address": "Physical address is not disclosed for privacy reasons.",
+            "email": "Direct email contact is restricted.",
+        }
+
+        return explanations.get(
+            blocked_field,
+            f"Information about {blocked_field} is restricted by the candidate's privacy settings."
+        )
+
+backend/agents/grounding_agent.py \
+"""
+Grounding Agent
+Retrieves relevant profile data and computes coverage score
+"""
+
+from typing import Dict, Any, List, Tuple
+from ..database.models import CandidateProfile
+from ..utils.llm_client import LLMClient
+from ..config import GCI_HIGH_THRESHOLD, GCI_LOW_THRESHOLD
+
+
+class GroundingAgent:
+    """
+    Agent that extracts relevant facts from profile data
+
+    Input:
+    - Allowed question
+    - Structured profile JSON
+    - Allowed fields (from policy agent)
+
+    Output:
+    - Grounding packet (list of relevant facts)
+    - Grounding Coverage Index (GCI)
+    """
+
+    def __init__(self):
+        self.llm = LLMClient()
+
+    def extract_grounding(
+        self,
+        question: str,
+        profile_data: Dict[str, Any],
+        allowed_fields: List[str]
+    ) -> Tuple[Dict[str, Any], float]:
+        """
+        Extract relevant facts from profile data
+
+        Returns:
+        - grounding_packet: dict of relevant facts
+        - gci_score: coverage score 0.0 to 1.0
+        """
+        # Filter profile data to only allowed fields
+        filtered_data = self._filter_profile_data(profile_data, allowed_fields)
+
+        if not filtered_data:
+            return {}, 0.0
+
+        # Use LLM to extract most relevant facts
+        grounding_packet = self._extract_relevant_facts(question, filtered_data)
+
+        # Compute coverage score
+        gci_score = self._compute_gci(question, grounding_packet)
+
+        return grounding_packet, gci_score
+
+    def _filter_profile_data(
+        self,
+        profile_data: Dict[str, Any],
+        allowed_fields: List[str]
+    ) -> Dict[str, Any]:
+        """Filter profile data to only include allowed fields"""
+        filtered = {}
+
+        # Field mapping for nested data
+        field_mapping = {
+            "experience": "experience",
+            "skills": "skills",
+            "education": "education",
+            "projects": "projects",
+            "summary": "summary",
+            "name": "name",
+            "location": "location",
+            "job_preferences": "job_preferences",
+            "remote_preference": "job_preferences",
+            "notice_period": "job_preferences",
+            "willing_to_relocate": "job_preferences"
+        }
+
+        for field in allowed_fields:
+            mapped_field = field_mapping.get(field, field)
+
+            if mapped_field in profile_data:
+                value = profile_data[mapped_field]
+
+                # Handle job_preferences sub-fields
+                if mapped_field == "job_preferences" and value:
+                    if field == "remote_preference":
+                        filtered["remote_preference"] = value.get("remote_preference", "")
+                    elif field == "notice_period":
+                        filtered["notice_period"] = value.get("notice_period", "")
+                    elif field == "willing_to_relocate":
+                        filtered["willing_to_relocate"] = value.get("willing_to_relocate", False)
+                    else:
+                        filtered[mapped_field] = value
+                else:
+                    filtered[mapped_field] = value
+
+        return filtered
+
+    def _extract_relevant_facts(
+        self,
+        question: str,
+        filtered_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Use LLM to extract most relevant facts for the question"""
+
+        prompt = f"""Given this recruiter question and candidate profile data, extract ONLY the facts directly relevant to answering the question.
+
+Question: "{question}"
+
+Available Profile Data:
+{self._format_profile_data(filtered_data)}
+
+Extract and return a JSON object with relevant facts. Only include information that directly helps answer the question.
+Be precise and factual. Do not infer or add any information not present in the data.
+
+Return format:
+{{
+    "relevant_facts": [
+        {{"category": "experience/skills/education/etc", "fact": "specific fact from data"}}
+    ],
+    "summary": "brief summary of available relevant information"
+}}
+
+JSON:"""
+
+        result = self.llm.generate_json(prompt)
+
+        if not result:
+            # Fallback: return filtered data as-is
+            return {"raw_data": filtered_data, "relevant_facts": [], "summary": ""}
+
+        # Add the source data for verification
+        result["source_data"] = filtered_data
+
+        return result
+
+    def _format_profile_data(self, data: Dict[str, Any]) -> str:
+        """Format profile data for LLM prompt"""
+        formatted = []
+
+        for key, value in data.items():
+            if isinstance(value, list):
+                if value and isinstance(value[0], dict):
+                    # List of dicts (experience, education, projects)
+                    formatted.append(f"\n{key.upper()}:")
+                    for i, item in enumerate(value, 1):
+                        formatted.append(f"  {i}. {self._format_dict(item)}")
+                else:
+                    # Simple list (skills)
+                    formatted.append(f"{key.upper()}: {', '.join(str(v) for v in value)}")
+            elif isinstance(value, dict):
+                formatted.append(f"{key.upper()}: {self._format_dict(value)}")
+            else:
+                formatted.append(f"{key.upper()}: {value}")
+
+        return '\n'.join(formatted)
+
+    def _format_dict(self, d: Dict) -> str:
+        """Format a dict as a readable string"""
+        parts = []
+        for k, v in d.items():
+            if v and v != "":
+                if isinstance(v, list):
+                    v = ', '.join(str(i) for i in v)
+                parts.append(f"{k}: {v}")
+        return ' | '.join(parts)
+
+    def _compute_gci(
+        self,
+        question: str,
+        grounding_packet: Dict[str, Any]
+    ) -> float:
+        """
+        Compute Grounding Coverage Index
+
+        This measures how well the available data can answer the question
+        """
+        relevant_facts = grounding_packet.get("relevant_facts", [])
+        source_data = grounding_packet.get("source_data", {})
+
+        # If no relevant facts extracted, low coverage
+        if not relevant_facts and not source_data:
+            return 0.0
+
+        # Use LLM to estimate coverage
+        prompt = f"""Rate how well the available facts can answer this question on a scale of 0.0 to 1.0.
+
+Question: "{question}"
+
+Available Facts:
+{self._format_facts(grounding_packet)}
+
+Rating criteria:
+- 1.0: Complete information available to fully answer the question
+- 0.7-0.9: Good coverage, can provide a substantial answer
+- 0.4-0.6: Partial coverage, can provide a limited answer
+- 0.1-0.3: Minimal relevant information
+- 0.0: No relevant information
+
+Return only a JSON object:
+{{"coverage_score": 0.X, "reason": "brief explanation"}}
+
+JSON:"""
+
+        result = self.llm.generate_json(prompt)
+
+        if result and "coverage_score" in result:
+            score = float(result["coverage_score"])
+            return max(0.0, min(1.0, score))
+
+        # Fallback: estimate based on fact count
+        fact_count = len(relevant_facts)
+        if fact_count >= 3:
+            return 0.8
+        elif fact_count >= 1:
+            return 0.5
+        elif source_data:
+            return 0.3
+        else:
+            return 0.0
+
+    def _format_facts(self, grounding_packet: Dict[str, Any]) -> str:
+        """Format facts for display"""
+        lines = []
+
+        for fact in grounding_packet.get("relevant_facts", []):
+            lines.append(f"- [{fact.get('category', 'general')}] {fact.get('fact', '')}")
+
+        if grounding_packet.get("summary"):
+            lines.append(f"\nSummary: {grounding_packet['summary']}")
+
+        return '\n'.join(lines) if lines else "No specific facts extracted"
+
+backend/agents/answer_composer_agent.py \
+"""
+Answer Composer Agent
+Generates responses strictly from grounding packet
+"""
+
+from typing import Dict, Any, Optional
+from ..utils.llm_client import LLMClient
+from ..config import GCI_LOW_THRESHOLD
+
+
+class AnswerComposerAgent:
+    """
+    Agent that composes answers from grounding packet
+
+    Input:
+    - Grounding packet
+    - GCI score
+    - Original question
+
+    Output:
+    - Generated answer (or fallback)
+    """
+
+    FALLBACK_RESPONSES = {
+        "no_info": "This information is not available in the candidate's profile.",
+        "blocked": "The candidate has chosen not to disclose this information.",
+        "partial": "Only limited information is available about this topic.",
+        "low_coverage": "The candidate's profile does not contain sufficient information to answer this question."
+    }
+
+    def __init__(self):
+        self.llm = LLMClient()
+
+    def compose(
+        self,
+        question: str,
+        grounding_packet: Dict[str, Any],
+        gci_score: float,
+        policy_decision: str,
+        policy_reason: str = ""
+    ) -> str:
+        """
+        Compose an answer from the grounding packet
+
+        Returns the generated answer or a fallback response
+        """
+        # Handle blocked policy
+        if policy_decision == "BLOCK":
+            return self.FALLBACK_RESPONSES["blocked"]
+
+        # Handle low coverage
+        if gci_score < GCI_LOW_THRESHOLD:
+            return self.FALLBACK_RESPONSES["low_coverage"]
+
+        # Check if we have any relevant facts
+        relevant_facts = grounding_packet.get("relevant_facts", [])
+        source_data = grounding_packet.get("source_data", {})
+
+        if not relevant_facts and not source_data:
+            return self.FALLBACK_RESPONSES["no_info"]
+
+        # Generate answer using LLM
+        answer = self._generate_answer(question, grounding_packet, policy_decision)
+
+        return answer
+
+    def _generate_answer(
+        self,
+        question: str,
+        grounding_packet: Dict[str, Any],
+        policy_decision: str
+    ) -> str:
+        """Generate an answer using LLM"""
+
+        system_prompt = """You are an AI assistant representing a job candidate's profile.
+
+CRITICAL RULES:
+1. ONLY use information explicitly provided in the grounding packet
+2. NEVER infer, assume, or fabricate any information
+3. If asked about something not in the data, say the information is not available
+4. Speak in third person about "the candidate"
+5. Be professional and concise
+6. Do not reveal information that was not provided to you"""
+
+        facts_text = self._format_grounding(grounding_packet)
+
+        prompt = f"""Answer this recruiter question about a candidate using ONLY the provided facts.
+
+Question: "{question}"
+
+Available Information:
+{facts_text}
+
+Policy Note: {"Full information available" if policy_decision == "ALLOW" else "Some information may be restricted"}
+
+Generate a professional, accurate response using only the facts provided.
+If the available information doesn't fully answer the question, acknowledge the limitation.
+
+Response:"""
+
+        response = self.llm.generate(prompt, system_prompt, temperature=0.3)
+
+        if not response:
+            return self.FALLBACK_RESPONSES["no_info"]
+
+        return response.strip()
+
+    def _format_grounding(self, grounding_packet: Dict[str, Any]) -> str:
+        """Format grounding packet for the prompt"""
+        lines = []
+
+        # Add relevant facts
+        for fact in grounding_packet.get("relevant_facts", []):
+            lines.append(f"• [{fact.get('category', 'info')}] {fact.get('fact', '')}")
+
+        # Add summary if available
+        if grounding_packet.get("summary"):
+            lines.append(f"\nSummary: {grounding_packet['summary']}")
+
+        # Add raw source data if available and no facts extracted
+        source_data = grounding_packet.get("source_data", {})
+        if source_data and not grounding_packet.get("relevant_facts"):
+            lines.append("\nProfile Data:")
+            for key, value in source_data.items():
+                if value:
+                    lines.append(f"• {key}: {self._summarize_value(value)}")
+
+        return '\n'.join(lines) if lines else "No specific information available"
+
+    def _summarize_value(self, value: Any) -> str:
+        """Summarize a value for display"""
+        if isinstance(value, list):
+            if len(value) == 0:
+                return "None listed"
+            elif isinstance(value[0], dict):
+                # List of experiences/education/projects
+                summaries = []
+                for item in value[:3]:  # Limit to 3
+                    if "company" in item:
+                        summaries.append(f"{item.get('title', '')} at {item.get('company', '')}")
+                    elif "institution" in item:
+                        summaries.append(f"{item.get('degree', '')} from {item.get('institution', '')}")
+                    elif "name" in item:
+                        summaries.append(item.get("name", ""))
+                return "; ".join(summaries)
+            else:
+                return ", ".join(str(v) for v in value[:10])
+        elif isinstance(value, dict):
+            return ", ".join(f"{k}: {v}" for k, v in value.items() if v)
+        else:
+            return str(value)
+
+    def generate_partial_answer(
+        self,
+        question: str,
+        grounding_packet: Dict[str, Any],
+        blocked_aspects: list
+    ) -> str:
+        """Generate a partial answer when some information is blocked"""
+
+        system_prompt = """You are an AI assistant representing a job candidate's profile.
+Only use provided information. Some topics are restricted and cannot be discussed."""
+
+        prompt = f"""Answer this question with available information. Note that some aspects are restricted.
+
+Question: "{question}"
+
+Available Information:
+{self._format_grounding(grounding_packet)}
+
+Restricted Topics (do not discuss): {', '.join(blocked_aspects)}
+
+Generate a helpful response using only available, unrestricted information.
+Politely note if the question touches on restricted topics.
+
+Response:"""
+
+        response = self.llm.generate(prompt, system_prompt, temperature=0.3)
+
+        if not response:
+            return self.FALLBACK_RESPONSES["partial"]
+
+        return response.strip()
+
+backend/agents/output_verification_agent.py \
+"""
+Output Verification Agent
+Verifies response compliance with grounding and policy
+"""
+
+from typing import Dict, Any, Tuple, List
+from ..utils.llm_client import LLMClient
+from ..config import POLICY_BLOCK
+
+
+class OutputVerificationAgent:
+    """
+    Agent that verifies generated answers
+
+    Input:
+    - Final answer
+    - Grounding packet
+    - Policy decision
+
+    Output:
+    - Verification result (PASS/FAIL)
+    - Issues found
+    - Corrected answer if needed
+    """
+
+    SAFE_FALLBACK = "This information is not available in the candidate's profile."
+
+    def __init__(self):
+        self.llm = LLMClient()
+
+    def verify(
+        self,
+        answer: str,
+        grounding_packet: Dict[str, Any],
+        policy_decision: str,
+        blocked_fields: List[str] = None
+    ) -> Tuple[str, List[str], str]:
+        """
+        Verify the generated answer
+
+        Returns:
+        - result: "PASS" or "FAIL"
+        - issues: list of issues found
+        - final_answer: verified answer or fallback
+        """
+        blocked_fields = blocked_fields or []
+        issues = []
+
+        # Check 1: Policy compliance
+        if not self._check_policy_compliance(answer, policy_decision, blocked_fields):
+            issues.append("Policy violation: Answer may reveal restricted information")
+
+        # Check 2: Grounding compliance
+        grounding_issues = self._check_grounding_compliance(answer, grounding_packet)
+        issues.extend(grounding_issues)
+
+        # Check 3: Hallucination check
+        hallucination_issues = self._check_hallucination(answer, grounding_packet)
+        issues.extend(hallucination_issues)
+
+        # Determine result
+        if issues:
+            result = "FAIL"
+            # Return safe fallback for policy violations
+            if any("Policy violation" in issue for issue in issues):
+                final_answer = self.SAFE_FALLBACK
+            else:
+                # For grounding issues, try to use original answer with warning
+                final_answer = answer
+        else:
+            result = "PASS"
+            final_answer = answer
+
+        return result, issues, final_answer
+
+    def _check_policy_compliance(
+        self,
+        answer: str,
+        policy_decision: str,
+        blocked_fields: List[str]
+    ) -> bool:
+        """Check if answer complies with policy"""
+        if policy_decision == POLICY_BLOCK:
+            # Answer should be a fallback
+            fallback_phrases = [
+                "not available",
+                "not disclosed",
+                "confidential",
+                "chosen not to",
+                "restricted",
+                "cannot share"
+            ]
+            return any(phrase in answer.lower() for phrase in fallback_phrases)
+
+        # Check for blocked field mentions
+        answer_lower = answer.lower()
+        sensitive_patterns = {
+            "salary": ["$", "salary", "compensation", "per annum", "lpa", "ctc"],
+            "phone": ["phone", "call me at", "reach me at", "number"],
+            "address": ["street", "apartment", "apt", "zip code"],
+        }
+
+        for field in blocked_fields:
+            if field in sensitive_patterns:
+                for pattern in sensitive_patterns[field]:
+                    if pattern in answer_lower:
+                        return False
+
+        return True
+
+    def _check_grounding_compliance(
+        self,
+        answer: str,
+        grounding_packet: Dict[str, Any]
+    ) -> List[str]:
+        """Check if answer is grounded in the provided data"""
+        issues = []
+
+        relevant_facts = grounding_packet.get("relevant_facts", [])
+        source_data = grounding_packet.get("source_data", {})
+
+        if not relevant_facts and not source_data:
+            # If no grounding data, answer should be a fallback
+            if "not available" not in answer.lower() and "don't have" not in answer.lower():
+                issues.append("Answer provided without sufficient grounding data")
+
+        return issues
+
+    def _check_hallucination(
+        self,
+        answer: str,
+        grounding_packet: Dict[str, Any]
+    ) -> List[str]:
+        """Check for potential hallucinations"""
+        issues = []
+
+        # Use LLM to check for claims not in grounding
+        source_data = grounding_packet.get("source_data", {})
+        relevant_facts = grounding_packet.get("relevant_facts", [])
+
+        if not source_data and not relevant_facts:
+            return issues
+
+        prompt = f"""Verify if this answer contains any information NOT present in the source data.
+
+Answer to verify:
+"{answer}"
+
+Source Data:
+{self._format_source_data(source_data)}
+
+Extracted Facts:
+{self._format_facts(relevant_facts)}
+
+Return JSON:
+{{
+    "has_unsupported_claims": true/false,
+    "unsupported_claims": ["list of claims not in source data"],
+    "severity": "none/low/high"
+}}
+
+JSON:"""
+
+        result = self.llm.generate_json(prompt)
+
+        if result:
+            if result.get("has_unsupported_claims") and result.get("severity") == "high":
+                claims = result.get("unsupported_claims", [])
+                for claim in claims[:2]:  # Limit to 2 issues
+                    issues.append(f"Potential unsupported claim: {claim}")
+
+        return issues
+
+    def _format_source_data(self, source_data: Dict) -> str:
+        """Format source data for verification prompt"""
+        lines = []
+        for key, value in source_data.items():
+            if value:
+                if isinstance(value, list):
+                    lines.append(f"{key}: {len(value)} items")
+                    for i, item in enumerate(value[:2]):
+                        if isinstance(item, dict):
+                            lines.append(f"  - {item}")
+                else:
+                    lines.append(f"{key}: {value}")
+        return '\n'.join(lines) if lines else "No source data"
+
+    def _format_facts(self, facts: List[Dict]) -> str:
+        """Format facts for verification prompt"""
+        if not facts:
+            return "No facts extracted"
+        return '\n'.join(f"- {f.get('fact', '')}" for f in facts)
+
+    def enforce_fallback(self, issues: List[str]) -> str:
+        """Determine appropriate fallback based on issues"""
+        if any("Policy violation" in issue for issue in issues):
+            return "The candidate has chosen not to disclose this information."
+        elif any("grounding" in issue.lower() for issue in issues):
+            return "This information is not available in the candidate's profile."
+        else:
+            return self.SAFE_FALLBACK
+
+backend/agents/pipeline.py
+"""
+Agent Pipeline - Orchestrates all agents
+"""
+
+from typing import Dict, Any, Optional
+from dataclasses import dataclass
+
+from ..database.db import Database
+from ..database.models import CandidateProfile
+from ..services.policy_service import PolicyService
+from ..services.interaction_service import InteractionService
+from ..services.trustworthiness_service import TrustworthinessService
+from .router_policy_agent import RouterPolicyAgent
+from .grounding_agent import GroundingAgent
+from .answer_composer_agent import AnswerComposerAgent
+from .output_verification_agent import OutputVerificationAgent
+
+
+@dataclass
+class PipelineResult:
+    """Result of pipeline execution"""
+    question: str
+    policy_decision: str
+    policy_reason: str
+    grounding_packet: Dict[str, Any]
+    gci_score: float
+    generated_answer: str
+    verification_result: str
+    verification_issues: list
+    final_response: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "question": self.question,
+            "policy_decision": self.policy_decision,
+            "policy_reason": self.policy_reason,
+            "gci_score": self.gci_score,
+            "verification_result": self.verification_result,
+            "verification_issues": self.verification_issues,
+            "final_response": self.final_response
+        }
+
+
+class AgentPipeline:
+    """
+    Multi-Agent Pipeline for processing recruiter questions
+
+    Flow:
+    1. Router & Policy Agent - Check privacy policies
+    2. Grounding Agent - Extract relevant facts, compute GCI
+    3. Answer Composer Agent - Generate response
+    4. Output Verification Agent - Verify and finalize
+    """
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+        self.policy_service = PolicyService(self.db)
+        self.interaction_service = InteractionService(self.db)
+        self.trustworthiness_service = TrustworthinessService(self.db)
+
+        # Initialize agents
+        self.router_agent = RouterPolicyAgent(self.policy_service)
+        self.grounding_agent = GroundingAgent()
+        self.composer_agent = AnswerComposerAgent()
+        self.verification_agent = OutputVerificationAgent()
+
+    def process_question(
+        self,
+        profile_id: int,
+        question: str
+    ) -> PipelineResult:
+        """
+        Process a recruiter question through the full pipeline
+
+        Returns PipelineResult with all intermediate and final outputs
+        """
+        # Get profile data
+        profile = self.db.get_profile_by_id(profile_id)
+        if not profile:
+            return PipelineResult(
+                question=question,
+                policy_decision="ERROR",
+                policy_reason="Profile not found",
+                grounding_packet={},
+                gci_score=0.0,
+                generated_answer="",
+                verification_result="FAIL",
+                verification_issues=["Profile not found"],
+                final_response="Unable to process request. Profile not found."
+            )
+
+        profile_data = profile.to_dict()
+
+        # Step 1: Router & Policy Agent
+        policy_decision, allowed_fields, policy_reason = self.router_agent.evaluate(
+            profile_id, question
+        )
+
+        # If completely blocked, return early
+        if policy_decision == "BLOCK":
+            result = PipelineResult(
+                question=question,
+                policy_decision=policy_decision,
+                policy_reason=policy_reason,
+                grounding_packet={},
+                gci_score=0.0,
+                generated_answer="",
+                verification_result="PASS",
+                verification_issues=[],
+                final_response="The candidate has chosen not to disclose this information."
+            )
+            self._log_interaction(profile_id, result)
+            return result
+
+        # Step 2: Grounding Agent
+        grounding_packet, gci_score = self.grounding_agent.extract_grounding(
+            question, profile_data, allowed_fields
+        )
+
+        # Step 3: Answer Composer Agent
+        generated_answer = self.composer_agent.compose(
+            question=question,
+            grounding_packet=grounding_packet,
+            gci_score=gci_score,
+            policy_decision=policy_decision,
+            policy_reason=policy_reason
+        )
+
+        # Step 4: Output Verification Agent
+        blocked_fields = [f for f in self.router_agent.analyze_question(question).get("relevant_fields", [])
+                        if f not in allowed_fields]
+
+        verification_result, verification_issues, final_response = self.verification_agent.verify(
+            answer=generated_answer,
+            grounding_packet=grounding_packet,
+            policy_decision=policy_decision,
+            blocked_fields=blocked_fields
+        )
+
+        # Build result
+        result = PipelineResult(
+            question=question,
+            policy_decision=policy_decision,
+            policy_reason=policy_reason,
+            grounding_packet=grounding_packet,
+            gci_score=gci_score,
+            generated_answer=generated_answer,
+            verification_result=verification_result,
+            verification_issues=verification_issues,
+            final_response=final_response
+        )
+
+        # Log interaction
+        self._log_interaction(profile_id, result)
+
+        return result
+
+    def _log_interaction(self, profile_id: int, result: PipelineResult):
+        """Log the interaction for audit"""
+        self.interaction_service.log_interaction(
+            profile_id=profile_id,
+            recruiter_question=result.question,
+            policy_decision=result.policy_decision,
+            grounding_packet=result.grounding_packet,
+            gci_score=result.gci_score,
+            generated_answer=result.generated_answer,
+            verification_result=result.verification_result,
+            final_response=result.final_response
+        )
+
+    def get_profile_with_trust_score(self, profile_id: int) -> Dict[str, Any]:
+        """Get profile with trustworthiness score"""
+        profile = self.db.get_profile_by_id(profile_id)
+        if not profile:
+            return {}
+
+        # Get or compute trust score
+        trust_score = self.trustworthiness_service.get_score(profile_id)
+        if not trust_score:
+            trust_score = self.trustworthiness_service.compute_score(profile_id)
+
+        return {
+            "profile": profile.to_dict(),
+            "trustworthiness": trust_score.to_dict() if trust_score else None
+        }
+
+    def refresh_trust_score(self, profile_id: int) -> Dict[str, Any]:
+        """Refresh and return trust score"""
+        trust_score = self.trustworthiness_service.refresh_score(profile_id)
+        return trust_score.to_dict()
+
+
+# Create utils files
+backend/utils/__init__.py \
+"""Utilities package"""
+from .llm_client import LLMClient
+from .url_validator import URLValidator
+from .text_utils import TextUtils
+
+backend/utils/llm_client.py \
+"""
+LLM Client using Groq API
+"""
+
+import os
+from typing import Optional, Dict, Any, List
+from groq import Groq
+
+from ..config import GROQ_API_KEY, GROQ_MODEL
+
+
+class LLMClient:
+    """Client for interacting with Groq LLM API"""
+
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        self.api_key = api_key or GROQ_API_KEY
+        self.model = model or GROQ_MODEL
+
+        if not self.api_key:
+            raise ValueError("GROQ_API_KEY not set. Please set it in .env file or pass it directly.")
+
+        self.client = Groq(api_key=self.api_key)
+
+    def generate(
+        self,
+        prompt: str,
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.3,
+        max_tokens: int = 1024
+    ) -> str:
+        """Generate a response from the LLM"""
+        messages = []
+
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+
+        messages.append({"role": "user", "content": prompt})
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"LLM Error: {e}")
+            return ""
+
+    def generate_json(
+        self,
+        prompt: str,
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.1,
+        max_tokens: int = 2048
+    ) -> Dict[str, Any]:
+        """Generate a JSON response from the LLM"""
+        import json
+
+        json_system = (system_prompt or "") + "\nRespond only with valid JSON, no additional text."
+
+        response = self.generate(prompt, json_system, temperature, max_tokens)
+
+        # Try to extract JSON from response
+        try:
+            # Handle markdown code blocks
+            if "```json" in response:
+                response = response.split("```json")[1].split("```")[0]
+            elif "```" in response:
+                response = response.split("```")[1].split("```")[0]
+
+            return json.loads(response.strip())
+        except json.JSONDecodeError:
+            # Try to find JSON object in response
+            try:
+                start = response.find("{")
+                end = response.rfind("}") + 1
+                if start != -1 and end > start:
+                    return json.loads(response[start:end])
+            except:
+                pass
+            return {}
+
+    def analyze_question(self, question: str, profile_fields: List[str]) -> Dict[str, Any]:
+        """Analyze what fields a question is asking about"""
+        prompt = f"""Analyze this recruiter question and determine which profile fields it's asking about.
+
+Question: "{question}"
+
+Available profile fields: {', '.join(profile_fields)}
+
+Return JSON with:
+- "relevant_fields": list of field names the question is asking about
+- "question_type": one of "experience", "skills", "education", "preferences", "personal", "general"
+- "sensitivity": "low", "medium", or "high"
+
+JSON Response:"""
+
+        return self.generate_json(prompt)
+
+backend/utils/url_validator.py \
+"""
+URL Validation and Light Extraction Utilities
+"""
+
+import requests
+import re
+from typing import Tuple, List, Optional
+from urllib.parse import urlparse
+from datetime import datetime
+
+
+class URLValidator:
+    """Validate URLs and perform light extraction"""
+
+    TIMEOUT = 10
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+
+    @staticmethod
+    def validate_url_format(url: str, expected_domain: Optional[str] = None) -> bool:
+        """Validate URL format"""
+        try:
+            result = urlparse(url)
+            if not all([result.scheme, result.netloc]):
+                return False
+            if expected_domain and expected_domain not in result.netloc:
+                return False
+            return True
+        except:
+            return False
+
+    @staticmethod
+    def check_reachability(url: str) -> Tuple[bool, Optional[str], Optional[str]]:
+        """
+        Check if URL is reachable
+        Returns: (is_reachable, final_url, page_title)
+        """
+        try:
+            response = requests.get(
+                url,
+                headers=URLValidator.HEADERS,
+                timeout=URLValidator.TIMEOUT,
+                allow_redirects=True
+            )
+
+            if response.status_code == 200:
+                # Extract title
+                title = None
+                title_match = re.search(r'<title[^>]*>([^<]+)</title>', response.text, re.IGNORECASE)
+                if title_match:
+                    title = title_match.group(1).strip()
+
+                return True, response.url, title
+            else:
+                return False, None, None
+        except Exception as e:
+            return False, None, None
+
+    @staticmethod
+    def extract_keywords(url: str, max_keywords: int = 30) -> List[str]:
+        """Extract visible keywords from a page (light extraction)"""
+        try:
+            response = requests.get(
+                url,
+                headers=URLValidator.HEADERS,
+                timeout=URLValidator.TIMEOUT
+            )
+
+            if response.status_code != 200:
+                return []
+
+            # Remove script and style content
+            text = response.text
+            text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.DOTALL | re.IGNORECASE)
+            text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
+
+            # Remove HTML tags
+            text = re.sub(r'<[^>]+>', ' ', text)
+
+            # Clean up whitespace
+            text = re.sub(r'\s+', ' ', text)
+
+            # Extract words
+            words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
+
+            # Filter common words
+            stopwords = {
+                'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had',
+                'her', 'was', 'one', 'our', 'out', 'has', 'have', 'been', 'from', 'this',
+                'that', 'with', 'they', 'will', 'what', 'when', 'where', 'which', 'their',
+                'about', 'would', 'there', 'could', 'other', 'than', 'then', 'your', 'more',
+                'some', 'very', 'just', 'also', 'most', 'into', 'over', 'such', 'only',
+                'page', 'view', 'sign', 'login', 'join', 'home', 'menu', 'click', 'here'
+            }
+
+            keywords = [w for w in words if w not in stopwords]
+
+            # Count frequency and return top keywords
+            from collections import Counter
+            word_counts = Counter(keywords)
+            return [word for word, count in word_counts.most_common(max_keywords)]
+
+        except Exception as e:
+            return []
+
+    @staticmethod
+    def extract_name_from_linkedin(url: str) -> Optional[str]:
+        """Try to extract name from LinkedIn page title"""
+        try:
+            response = requests.get(
+                url,
+                headers=URLValidator.HEADERS,
+                timeout=URLValidator.TIMEOUT
+            )
+
+            if response.status_code != 200:
+                return None
+
+            # LinkedIn title format: "Name - Title | LinkedIn"
+            title_match = re.search(r'<title[^>]*>([^<]+)</title>', response.text, re.IGNORECASE)
+            if title_match:
+                title = title_match.group(1).strip()
+                # Extract name before " - " or " | "
+                name_part = re.split(r'\s*[-|]\s*', title)[0].strip()
+                if name_part and len(name_part) > 2:
+                    return name_part
+
+            return None
+        except:
+            return None
+
+    @staticmethod
+    def extract_name_from_github(url: str) -> Optional[str]:
+        """Try to extract name from GitHub page"""
+        try:
+            response = requests.get(
+                url,
+                headers=URLValidator.HEADERS,
+                timeout=URLValidator.TIMEOUT
+            )
+
+            if response.status_code != 200:
+                return None
+
+            # Look for name in the page
+            # GitHub shows name in itemprop="name" or class="p-name"
+            name_match = re.search(
+                r'itemprop="name"[^>]*>([^<]+)</span>|class="p-name[^"]*"[^>]*>([^<]+)<',
+                response.text,
+                re.IGNORECASE
+            )
+            if name_match:
+                name = name_match.group(1) or name_match.group(2)
+                if name:
+                    return name.strip()
+
+            # Fallback to title
+            title_match = re.search(r'<title[^>]*>([^<]+)</title>', response.text, re.IGNORECASE)
+            if title_match:
+                title = title_match.group(1).strip()
+                # GitHub title format: "username (Name)"
+                name_match = re.search(r'\(([^)]+)\)', title)
+                if name_match:
+                    return name_match.group(1).strip()
+
+                # Or just username before " · "
+                name_part = title.split('·')[0].strip()
+                if name_part:
+                    return name_part
+
+            return None
+        except:
+            return None
+
+    @classmethod
+    def validate_linkedin(cls, url: str) -> Tuple[bool, Optional[str], List[str]]:
+        """Validate LinkedIn URL and extract basic info"""
+        if not cls.validate_url_format(url, "linkedin.com"):
+            return False, None, []
+
+        is_reachable, final_url, title = cls.check_reachability(url)
+        if not is_reachable:
+            return False, None, []
+
+        name = cls.extract_name_from_linkedin(url)
+        keywords = cls.extract_keywords(url)
+
+        return True, name, keywords
+
+    @classmethod
+    def validate_github(cls, url: str) -> Tuple[bool, Optional[str], List[str]]:
+        """Validate GitHub URL and extract basic info"""
+        if not cls.validate_url_format(url, "github.com"):
+            return False, None, []
+
+        is_reachable, final_url, title = cls.check_reachability(url)
+        if not is_reachable:
+            return False, None, []
+
+        name = cls.extract_name_from_github(url)
+        keywords = cls.extract_keywords(url)
+
+        return True, name, keywords
+
+    @classmethod
+    def validate_portfolio(cls, url: str) -> Tuple[bool, Optional[str], List[str]]:
+        """Validate portfolio URL and extract basic info"""
+        if not cls.validate_url_format(url):
+            return False, None, []
+
+        is_reachable, final_url, title = cls.check_reachability(url)
+        if not is_reachable:
+            return False, None, []
+
+        keywords = cls.extract_keywords(url)
+
+        return True, title, keywords
+
+backend/utils/text_utils.py
+"""
+Text processing utilities
+"""
+
+import re
+from typing import List, Set, Tuple
+from fuzzywuzzy import fuzz
+
+
+class TextUtils:
+    """Text processing utilities for profile comparison"""
+
+    @staticmethod
+    def normalize_name(name: str) -> str:
+        """Normalize a name for comparison"""
+        if not name:
+            return ""
+        # Remove special characters, lowercase
+        name = re.sub(r'[^\w\s]', '', name.lower())
+        # Remove extra whitespace
+        name = ' '.join(name.split())
+        return name
+
+    @staticmethod
+    def name_similarity(name1: str, name2: str) -> float:
+        """
+        Calculate similarity between two names
+        Returns: similarity score 0.0 to 1.0
+        """
+        if not name1 or not name2:
+            return 0.0
+
+        n1 = TextUtils.normalize_name(name1)
+        n2 = TextUtils.normalize_name(name2)
+
+        if not n1 or not n2:
+            return 0.0
+
+        # Use fuzzy ratio
+        ratio = fuzz.ratio(n1, n2) / 100.0
+
+        # Also check token sort ratio for reordered names
+        token_ratio = fuzz.token_sort_ratio(n1, n2) / 100.0
+
+        # Return max of both
+        return max(ratio, token_ratio)
+
+    @staticmethod
+    def extract_keywords(text: str, min_length: int = 3) -> Set[str]:
+        """Extract meaningful keywords from text"""
+        if not text:
+            return set()
+
+        # Remove special characters
+        text = re.sub(r'[^\w\s]', ' ', text.lower())
+
+        # Split into words
+        words = text.split()
+
+        # Filter short words and common stopwords
+        stopwords = {
+            'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had',
+            'her', 'was', 'one', 'our', 'out', 'has', 'have', 'been', 'from', 'this',
+            'that', 'with', 'they', 'will', 'what', 'when', 'where', 'which', 'their',
+            'about', 'would', 'there', 'could', 'other', 'than', 'then', 'your', 'more',
+            'some', 'very', 'just', 'also', 'most', 'into', 'over', 'such', 'only'
+        }
+
+        keywords = {w for w in words if len(w) >= min_length and w not in stopwords}
+        return keywords
+
+    @staticmethod
+    def keyword_overlap(keywords1: Set[str], keywords2: Set[str]) -> float:
+        """
+        Calculate keyword overlap ratio
+        Returns: Jaccard similarity 0.0 to 1.0
+        """
+        if not keywords1 or not keywords2:
+            return 0.0
+
+        k1 = {k.lower() for k in keywords1}
+        k2 = {k.lower() for k in keywords2}
+
+        intersection = len(k1 & k2)
+        union = len(k1 | k2)
+
+        if union == 0:
+            return 0.0
+
+        return intersection / union
+
+    @staticmethod
+    def employer_overlap(employers1: List[str], employers2: List[str]) -> float:
+        """
+        Calculate employer overlap
+        Uses fuzzy matching for similar company names
+        """
+        if not employers1 or not employers2:
+            return 0.0
+
+        e1 = [e.lower().strip() for e in employers1 if e]
+        e2 = [e.lower().strip() for e in employers2 if e]
+
+        if not e1 or not e2:
+            return 0.0
+
+        matches = 0
+        for emp1 in e1:
+            for emp2 in e2:
+                # Fuzzy match for similar names
+                if fuzz.ratio(emp1, emp2) >= 80 or emp1 in emp2 or emp2 in emp1:
+                    matches += 1
+                    break
+
+        return matches / len(e1)
+
+    @staticmethod
+    def extract_years(text: str) -> List[int]:
+        """Extract year numbers from text"""
+        years = re.findall(r'\b(19|20)\d{2}\b', text)
+        return [int(y) for y in years]
+
+    @staticmethod
+    def check_timeline_conflicts(
+        experience: List[dict],
+        external_years: List[int]
+    ) -> Tuple[bool, List[str]]:
+        """
+        Check for timeline conflicts between profile and external data
+        Returns: (has_conflict, list of conflict descriptions)
+        """
+        conflicts = []
+
+        # Extract years from experience
+        profile_years = set()
+        for exp in experience:
+            start = exp.get("start_date", "")
+            end = exp.get("end_date", "")
+
+            start_years = TextUtils.extract_years(start)
+            end_years = TextUtils.extract_years(end)
+
+            if start_years:
+                profile_years.add(min(start_years))
+            if end_years:
+                profile_years.add(max(end_years))
+
+        # Check for significant gaps
+        if profile_years and external_years:
+            profile_min = min(profile_years) if profile_years else 0
+            profile_max = max(profile_years) if profile_years else 0
+            external_min = min(external_years) if external_years else 0
+            external_max = max(external_years) if external_years else 0
+
+            # Check if there's a significant discrepancy
+            if abs(profile_min - external_min) > 5:
+                conflicts.append(f"Career start year discrepancy: profile shows {profile_min}, external shows {external_min}")
+
+            if abs(profile_max - external_max) > 2:
+                conflicts.append(f"Recent activity discrepancy: profile shows {profile_max}, external shows {external_max}")
+
+        return len(conflicts) > 0, conflicts
+
+    @staticmethod
+    def skills_overlap(skills1: List[str], skills2: List[str]) -> float:
+        """Calculate skills overlap ratio"""
+        if not skills1 or not skills2:
+            return 0.0
+
+        s1 = {s.lower().strip() for s in skills1 if s}
+        s2 = {s.lower().strip() for s in skills2 if s}
+
+        if not s1 or not s2:
+            return 0.0
+
+        # Check for fuzzy matches
+        matches = 0
+        for skill1 in s1:
+            for skill2 in s2:
+                if fuzz.ratio(skill1, skill2) >= 85 or skill1 in skill2 or skill2 in skill1:
+                    matches += 1
+                    break
+
+        return matches / len(s1)
+
+# Create root files
+requirements.txt 
+streamlit
+groq
+python-dotenv
+pdfplumber
+python-docx
+requests
+fuzzywuzzy
+python-Levenshtein
+
+.env.example
+GROQ_API_KEY=enter  api key here
+DATABASE_PATH=data/thelog.db
+

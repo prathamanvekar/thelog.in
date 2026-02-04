@@ -1,0 +1,12 @@
+streamlit
+groq
+python-dotenv
+pdfplumber
+python-docx
+requests
+fuzzywuzzy
+python-Levenshtein
+PyPDF2
+
+
+
